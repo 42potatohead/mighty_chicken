@@ -21,6 +21,7 @@
 typedef struct s_chicken
 {
     char *input;
+    char *builtins[8];
     char **tokens;
 } t_chicken;
 

@@ -32,7 +32,37 @@ void print_banner(void)
     "██║     ██╔══██║██║██║     ██╔═██╗ ██╔══╝  ██║╚██╗██║    ╚════██║██╔══██║██╔══╝  ██║     ██║         ╚██╗ ██╔╝ ██║   ████╔╝██║\n"
     "╚██████╗██║  ██║██║╚██████╗██║  ██╗███████╗██║ ╚████║    ███████║██║  ██║███████╗███████╗███████╗     ╚████╔╝  ██║██╗╚██████╔╝\n"
     "╚═════╝╚═╝  ╚═╝╚═╝ ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═══╝    ╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝      ╚═══╝   ╚═╝╚═╝ ╚═════╝ \n");
-                                                                                                                                
+
+}
+
+is_cmd
+{
+    if (accsess(paths, token[i])
+        return 1;
+    else
+        return 0;
+}
+
+void exec_input(t_grand *grand)
+{
+    int i = 0, x = 0;
+    while(grand->chicken.tokens[i])
+    {
+        if (grand->chicken.tokens[i] == operator)
+            i++;
+        if (grand->chicken.tokens[i] == file)
+            i++;
+        if (ft_strncmp(grand->chicken.tokens[i], grand->chicken.builtins[x]) == 0)
+        {
+            builtin(chiocken[i]);
+        }
+        else if (is_cmd)
+        {
+            exev(grand->chicken.tokens[i]);
+        }
+        i++;
+    }
+    excve;
 }
 
 void process_input(t_grand *grand)
@@ -45,6 +75,7 @@ void process_input(t_grand *grand)
     else
     {
         grand->chicken.tokens = ft_split(grand->chicken.input, ' ');
+        exec_input(grand);
     }
 
 }
@@ -54,13 +85,23 @@ void enviro(void)
     char **env;
     char *env_pre;
 
-    env_pre=getenv("PATH");
+    env_pre = getenv("PATH");
     env = ft_split(env_pre, ':');
 }
 
-int main() 
+int main()
 {
     t_grand grand;
+
+    grand.chicken.builtins[0] = "pwd";
+    grand.chicken.builtins[1] = "echo";
+    grand.chicken.builtins[2] = "cd";
+    grand.chicken.builtins[3] = "export";
+    grand.chicken.builtins[4] = "unset";
+    grand.chicken.builtins[5] = "env";
+    grand.chicken.builtins[6] = "exit";
+    grand.chicken.builtins[7] = NULL;
+
 
     init_var(&grand);
     enviro();
