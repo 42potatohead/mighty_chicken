@@ -13,13 +13,54 @@
 # ifndef CHICKEN_H
 # define CHICKEN_H
 
+#include <string.h>
 #include <stdio.h>
 #include "./libft/libft.h"
 #include <readline/readline.h>
 #include <readline/history.h>
+#include <sys/wait.h>
+
+// Token types
+typedef enum
+{
+    TOKEN_COMMAND,
+    TOKEN_ARGUMENT,
+    TOKEN_PIPE,
+    TOKEN_REDIRECT_OUT,
+    TOKEN_APPENOUT,
+    TOKEN_REDIRECT_IN,
+    TOKEN_END
+} e_TokenType;
+
+// Token structure
+typedef struct s_Token
+{
+    e_TokenType type;
+    char *value;
+} t_Token;
+
+// AST node types
+typedef enum
+{
+    NODE_COMMAND,
+    NODE_PIPE,
+    NODE_REDIRECT_OUT,
+    NODE_REDIRECT_IN,
+    NODE_SEQUENCE
+} e_NodeType;
+
+// AST node structure
+typedef struct s_ASTNode
+{
+    e_NodeType type;
+    char **args; // For commands
+    struct t_ASTNode *left;
+    struct t_ASTNode *right;
+} t_ASTNode;
 
 typedef struct s_chicken
 {
+    int token_count;
     char *input;
     char *builtins[8];
     char **tokens;
@@ -28,6 +69,7 @@ typedef struct s_chicken
 typedef struct s_grand
 {
     t_chicken chicken;
+    t_Token Token;
 } t_grand;
 
 # endif
