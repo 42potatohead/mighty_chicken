@@ -19,16 +19,20 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include <sys/wait.h>
+# include <errno.h>
+#include <signal.h>
+#include <stdlib.h>
 
 // Token types
 typedef enum
 {
     TOKEN_COMMAND,
     TOKEN_ARGUMENT,
+    TOKEN_OPTION,
     TOKEN_PIPE,
     TOKEN_REDIRECT_OUT,
-    TOKEN_APPENOUT,
     TOKEN_REDIRECT_IN,
+    TOKEN_APPENOUT,
     TOKEN_END
 } e_TokenType;
 
@@ -54,8 +58,9 @@ typedef struct s_ASTNode
 {
     e_NodeType type;
     char **args; // For commands
-    struct t_ASTNode *left;
-    struct t_ASTNode *right;
+    int last_cmd;
+    struct s_ASTNode *left;
+    struct s_ASTNode *right;
 } t_ASTNode;
 
 typedef struct s_chicken
