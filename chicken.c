@@ -177,11 +177,13 @@ t_Token *lexer(const char *input, t_grand *grand)
                 input++;
             tokens[grand->chicken.token_count++] = (t_Token){TOKEN_COMMAND, strndup(start, input - start)};
         }
+        while(isspace(*input))
+            input++;
         if (*input)
             input++; // fix garbage
     }
     tokens[grand->chicken.token_count++] = (t_Token){TOKEN_END, NULL};
-    printf("tokens %s %s %s enum: %d %d\n", tokens[0].value, tokens[1].value, tokens[2].value, (int)tokens[0].type, (int)tokens[1].type);
+    printf("tokens |%s| |%s| |%s| enum: %d %d\n", tokens[0].value, tokens[1].value, tokens[2].value, (int)tokens[0].type, (int)tokens[1].type);
     return (tokens);
 }
 
