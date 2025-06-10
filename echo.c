@@ -16,11 +16,11 @@
     - echo -n multiple arguments
 */
 
-int chkn_echo(char **argv) 
+int chkn_echo(char **argv)
 {
     int i;
 
-    if(!argv[1]) //just echo 
+    if(!argv[1]) //just echo
         ft_printf("\n");
     else
     {

@@ -1,4 +1,32 @@
-cc chicken.c exit.c pwd.c echo.c cd.c setenv.c env.c export.c printf_stderr.c unset.c -L./libft -lft -lreadline -o chicken
+CC = cc
+RM = rm -rf
+CFLAGS = -L./libft -lft -lreadline -g3
+LIB = -L./libft -lft
 
+SRC = chicken.c \
+	  lexicaltokenizer.c \
+	  parser.c \
+	  cd.c \
+	  setenv.c
 
-cc -Wall -Wextra -Werror chicken.c exit.c pwd.c echo.c cd.c setenv.c -L./libft -lft -lreadline -o chicken
+OBJ = $(SRC:.c=.o)
+
+NAME = chicken
+
+all: $(NAME)
+
+$(NAME): $(OBJ)
+	$(MAKE) -C ./libft
+	$(CC) $(OBJ) $(LIB) -o $(NAME) $(CFLAGS)
+
+clean:
+	$(RM) $(OBJ)
+	$(MAKE) clean -C ./libft
+
+fclean: clean
+	$(RM) $(NAME)
+	$(MAKE) fclean -C ./libft
+
+re: fclean $(NAME)
+
+.PHONY: all clean fclean re

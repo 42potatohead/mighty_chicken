@@ -1,13 +1,13 @@
 #include "chicken.h"
 
 /*
-    If no options are supplied, 
+    If no options are supplied,
     each name refers to a variable; if there is no variable by that name, a function with that name, if any, is unset.
-    
+
     Readonly variables and functions may not be unset. Some shell variables lose their special behavior if they are unset;
     such behavior is noted in the description of the individual variables. The return status is zero unless a name is readonly
     or may not be unset.
-     
+
     tests:
     - unset
     - unset non existing variable
@@ -15,13 +15,13 @@
     - unset VAR
 */
 
-static void unset_var(char ***envp, const char *key) 
+static void unset_var(char ***envp, const char *key)
 {
     size_t len;
     char **env;
     int i;
     int j;
-        
+
     env = *envp;
     len = ft_strlen(key);
     i = 0;
@@ -50,6 +50,6 @@ ft_printf("before %s\n", argv[1]);
         unset_var(envp, argv[i]);
         i++;
     }
-ft_printf("after %s\n", get_env_var(*envp, argv[1]));
+    ft_printf("after %s\n", get_env_var(*envp, argv[1]));
     return(EXIT_SUCCESS);
 }

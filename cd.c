@@ -15,7 +15,7 @@
     - cd existing directory
     - cd non existing directory "bash: cd: ataan: No such file or directory"
     - cd directory with no read permission -> successfully change directory
-    - cd filename 
+    - cd filename
     - cd dir1 dir2 "bash: cd: too many arguments"
     - cd /home
 */
@@ -27,7 +27,7 @@ static int count_arg(char **argv)
     argc = 0;
     while (argv[argc])
         argc++;
-    return argc;    
+    return argc;
 }
 
 static char *find_new_dir(int argc, char **argv, char **envp)
@@ -52,6 +52,8 @@ static char *find_new_dir(int argc, char **argv, char **envp)
 */
 int chkn_cd(char **argv, char ***envp)
 {
+    // ft_printf("chkn_cd called with args: %s %s\n", argv[0], argv[1] ? argv[1] : "NULL");
+    ft_printf("chkn_cd called\n");
     char cwd[PATH_MAX];
     char *new_dir;
     int     argc;
@@ -68,7 +70,7 @@ int chkn_cd(char **argv, char ***envp)
     }
     new_dir = find_new_dir(argc, argv, *envp);
     if (chdir(new_dir) != 0)
-    { 
+    {
         perror("chicken: cd");  // Print error if `chdir` fails
         return(EXIT_FAILURE);
     }

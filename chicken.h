@@ -22,11 +22,13 @@
 # include <errno.h>
 #include <signal.h>
 #include <stdlib.h>
+#include <limits.h>
 
 // Token types
 typedef enum
 {
     TOKEN_COMMAND,
+    TOKEN_BUILTIN,
     TOKEN_ARGUMENT,
     TOKEN_OPTION,
     TOKEN_PIPE,
@@ -47,6 +49,7 @@ typedef struct s_Token
 typedef enum
 {
     NODE_COMMAND,
+    NODE_BUILTIN,
     NODE_PIPE,
     NODE_REDIRECT_OUT,
     NODE_REDIRECT_IN,
@@ -71,10 +74,31 @@ typedef struct s_chicken
     char **tokens;
 } t_chicken;
 
+typedef struct s_env
+{
+    char **envp;
+} t_env;
+
 typedef struct s_grand
 {
     t_chicken chicken;
     t_Token Token;
+    t_env env;
 } t_grand;
+
+t_Token *lexer(const char *input, t_grand *grand);
+t_ASTNode *parse_expression(t_Token **tokens);
+t_ASTNode *parse_command(t_Token **tokens);
+t_ASTNode *create_node(e_NodeType type, char **args, t_ASTNode *left, t_ASTNode *right, int last_cmd);
+char *strdup_wrapper(char *(*f)(const char *), const char *s);
+int chkn_cd(char **argv, char ***envp);
+char *get_env_var(char **envp, const char *key);
+int set_env_var(char ***envp, const char *key, const char *value);
+int chkn_unset(char ***envp, char **argv);
+int chkn_export(char ***envp, char **argv);
+int chkn_env(char **envp);
+int chkn_exit(char **argv, char ***envp);
+int chkn_pwd(void);
+int chkn_echo(char **argv);
 
 # endif
