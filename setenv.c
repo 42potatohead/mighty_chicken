@@ -1,99 +1,115 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   setenv.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ataan <ataan@student.42amman.com>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/06/11 15:04:18 by ataan             #+#    #+#             */
+/*   Updated: 2025/06/13 20:23:22 by ataan            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "chicken.h"
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
-#include "chicken.h"
 
-static char *join_key_value(const char *key, const char *value)
+static char	*join_key_value(const char *key, const char *value)
 {
-    char *tmp;
-    char *new_var;
+	char	*tmp;
+	char	*new_var;
 
-    tmp = ft_strjoin(key, "=");
-    if (!tmp)
-        return NULL;
-    new_var = ft_strjoin(tmp, value);
-    if (!new_var)
-        return NULL;
-    free(tmp);
-    return (new_var);
+	tmp = ft_strjoin(key, "=");
+	if (!tmp)
+		return (NULL);
+	new_var = ft_strjoin(tmp, value);
+	if (!new_var)
+		return (NULL);
+	free(tmp);
+	return (new_var);
 }
 
-static int replace_existing_var(char ***envp, const char *key, char *new_var)
+static int	replace_existing_var(char ***envp, const char *key, char *new_var)
 {
-    int i;
-    size_t key_len;
-    char **env;
- 
-    key_len = strlen(key);
-    env = *envp;
-    i = 0;
-    while(env[i])
-    {
-        if (ft_strncmp(env[i], key, key_len) == 0 && env[i][key_len] == '=')
-        {
-            free(env[i]);
-            env[i] = new_var;
-            return 0;
-        }
-        i++;
-    }
-    return (i);
+	int		i;
+	size_t	key_len;
+	char	**env;
+
+	key_len = strlen(key);
+	env = *envp;
+	i = 0;
+	while (env[i])
+	{
+		if (ft_strncmp(env[i], key, key_len) == 0 && env[i][key_len] == '=')
+		{
+			free(env[i]);
+			env[i] = new_var;
+			return (0);
+		}
+		i++;
+	}
+	return (i);
 }
 
-static int append_new_var(char *new_var, int i, char ***envp)
+static int	append_new_var(char *new_var, int i, char ***envp)
 {
-    char **new_env;
-    char **env;
-    int j;
+	char	**new_env;
+	char	**env;
+	int		j;
 
-    new_env = malloc(sizeof(char *) * (i + 2));
-    if (!new_env)
-    {
-        free(new_var);
-        return -1;
-    }
-    env = *envp;
-    j = 0;
-    while (j < i)
-    {
-        new_env[j] = env[j];
-        j++;
-    }
-    new_env[i] = new_var;
-    new_env[i + 1] = NULL;
-    free(env); // Free old array (strings are preserved unless replaced)
-    *envp = new_env;
-    return 0;
+	new_env = malloc(sizeof(char *) * (i + 2));
+	if (!new_env)
+	{
+		free(new_var);
+		return (-1);
+	}
+	env = *envp;
+	j = 0;
+	while (j < i)
+	{
+		new_env[j] = env[j];
+		j++;
+	}
+	new_env[i] = new_var;
+	new_env[i + 1] = NULL;
+	// free(env); // Free old array (strings are preserved unless replaced)
+	*envp = new_env;
+	return (0);
 }
 
-int set_env_var(char ***envp, const char *key, const char *value)
+// free(new_var); 
+//not needed we shall clean the whole enviroment when shell is closed
+int	set_env_var(char ***envp, const char *key, const char *value)
 {
-    int i;
-    char *new_var;
+	int		i;
+	char	*new_var;
 
-    new_var = join_key_value(key, value);
-    if(!new_var)
-        return (-1);
-    i = replace_existing_var(envp, key, new_var);
-    if (i > 0)
-        return (append_new_var(new_var, i, envp));
-    return 0;
+	if (envp == NULL || key == NULL || value == NULL)
+		return (1);
+	new_var = join_key_value(key, value);
+	if (!new_var)
+		return (1);
+	i = replace_existing_var(envp, key, new_var);
+	if (i > 0)
+		return (append_new_var(new_var, i, envp));
+	return (0);
 }
 
-char *get_env_var(char **envp, const char *key)
+char	*get_env_var(char **envp, const char *key)
 {
-    size_t key_len;
-    int i;
+	size_t	key_len;
+	int		i;
 
-    if (!envp || !key)
-        return NULL;
-    key_len = strlen(key);
-    i = 0;
-    while (envp[i])
-    {
-        if (ft_strncmp(envp[i], key, key_len) == 0 && envp[i][key_len] == '=')
-            return envp[i] + key_len + 1;  // Return pointer to value
-        i++;
-    }
-    return NULL;  // Not found
+	if (!envp || !key)
+		return (NULL);
+	key_len = strlen(key);
+	i = 0;
+	while (envp[i])
+	{
+		if (ft_strncmp(envp[i], key, key_len) == 0 && envp[i][key_len] == '=')
+			return (envp[i] + key_len + 1); // Return pointer to value
+		i++;
+	}
+	return (NULL); // Not found
 }
