@@ -15,15 +15,14 @@
      - free memory before exit
      - signal handling
      - sharing the static functions outside this file
-    
-	- Error messages typically go to stderr. 
+
+	- Error messages typically go to stderr.
 		consider replacing the ft_printf statements
     - When too many args: print error, set exit code to 1,
 		AND exit
 */
 
 #include "chicken.h"
-#include <limits.h>
 
 static int	all_digits(const char *s)
 {
@@ -49,15 +48,15 @@ static int	within_bound(const char *s, int neg)
 	else
 		bound = "9223372036854775807";
 	i = 0;
-	while (s[i])
+	while (*s && s[i])
 	{
 		if (s[i] < bound[i])
-			return (1);
+			return (EXIT_FAILURE);
 		else if (s[i] > bound[i])
-			return (0);
+			return (EXIT_SUCCESS);
 		i++;
 	}
-	return (1);
+	return (EXIT_FAILURE);
 }
 
 //check empty
@@ -80,18 +79,19 @@ int	is_valid_long_long(const char *s)
 		s++;
 	while (*s == '0')
 		s++;
-	if (ft_strlen(s) > 19)
+	if (*s != '\0' && ft_strlen(s) > 19)
 		return (0);
 	else
 	{
 		if (!all_digits(s))
-			return (0);
+			return (EXIT_SUCCESS);
 		if (!within_bound(s, neg))
-			return (0);
+			return (EXIT_SUCCESS);
 	}
 	return (1);
 }
 
+// exit needs to clean up
 int	chkn_exit(char **argv)
 {
 	if (argv == NULL)
@@ -101,18 +101,16 @@ int	chkn_exit(char **argv)
 		printf("exit\n");
 		exit(0);
 	}
-	else if (argv[2])
-	{
-		ft_putstr_fd("chicken: exit: too many arguments\n", STDERR_FILENO);
-		exit(1);
-	}
 	else if (!is_valid_long_long(argv[1]))
 	{
+		ft_putstr_fd("exit\n", STDERR_FILENO);
 		ft_putstr_fd("chicken: exit: ", STDERR_FILENO);
 		ft_putstr_fd(argv[1], STDERR_FILENO);
 		ft_putstr_fd(" numeric argument required\n", STDERR_FILENO);
 		exit(2);
 	}
+	else if (argv[2])
+		ft_putstr_fd("chicken: exit: too many arguments\n", STDERR_FILENO);
 	else
 	{
 		ft_putstr_fd("exit\n", STDERR_FILENO);

@@ -34,6 +34,7 @@ typedef enum
     TOKEN_PIPE,
     TOKEN_REDIRECT_OUT,
     TOKEN_REDIRECT_IN,
+    TOKEN_FILEIN,
     TOKEN_APPENOUT,
     TOKEN_END
 } e_TokenType;
@@ -72,11 +73,14 @@ typedef struct s_chicken
     char *input;
     char *builtins[8];
     char **tokens;
+    int status;
 } t_chicken;
 
 typedef struct s_env
 {
     char **envp;
+    char **split_path;
+	char *full_path;
 } t_env;
 
 typedef struct s_grand
@@ -86,19 +90,23 @@ typedef struct s_grand
     t_env env;
 } t_grand;
 
-t_Token *lexer(const char *input, t_grand *grand);
+t_Token *lexer(char *input, t_grand *grand);
 t_ASTNode *parse_expression(t_Token **tokens);
 t_ASTNode *parse_command(t_Token **tokens);
 t_ASTNode *create_node(e_NodeType type, char **args, t_ASTNode *left, t_ASTNode *right, int last_cmd);
-char *strdup_wrapper(char *(*f)(const char *), const char *s);
+void execute(t_ASTNode *node, t_grand *grand);
+void execute_command(t_ASTNode *node, t_grand *grand);
+void call_builtin(t_ASTNode *node, t_grand *grand);
+void close_wait(int fd[2], t_grand *grand);
+void get_path(t_grand *grand, char *cmd);
 int chkn_cd(char **argv, char ***envp);
 char *get_env_var(char **envp, const char *key);
 int set_env_var(char ***envp, const char *key, const char *value);
 int chkn_unset(char ***envp, char **argv);
 int chkn_export(char ***envp, char **argv);
-int chkn_env(char **envp);
-int chkn_exit(char **argv, char ***envp);
-int chkn_pwd(void);
+int chkn_exit(char **argv);
+int	chkn_pwd(char **argv);
 int chkn_echo(char **argv);
+int	chkn_prnt_envp(char **argv, char **envp);
 
 # endif

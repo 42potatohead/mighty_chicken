@@ -6,8 +6,8 @@ LIB = -L./libft -lft
 SRC = chicken.c \
 	  lexicaltokenizer.c \
 	  parser.c \
-	  cd.c \
-	  setenv.c
+	  setenv.c \
+	  cd.c echo.c env.c exit.c export.c pwd.c unset.c chkn_execute.c get_path.c
 
 OBJ = $(SRC:.c=.o)
 

@@ -44,8 +44,8 @@ int	chkn_pwd(char **argv)
 	if (getcwd(cwd, PATH_MAX) == NULL)
 	{
 		perror("getcwd");
-		return (1);
+		return (EXIT_FAILURE);
 	}
 	ft_printf("%s\n", cwd);
-	return (0);
+	return (EXIT_SUCCESS);
 }

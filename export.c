@@ -27,11 +27,11 @@ static int	prnt_envp(char **envp)
 	int	i;
 
 	if (envp == NULL)
-		return -1;
+		return (-1);
 	i = 0;
 	while (envp[i])
 		printf("declare -x %s\n", envp[i++]);
-	return (0);
+	return (EXIT_SUCCESS);
 }
 
 // Check if a string is a valid variable name
@@ -46,7 +46,7 @@ static int	is_valid_identifier(char *name)
 		ft_putstr_fd("chicken_shell: export: `", STDERR_FILENO);
 		ft_putstr_fd(name, STDERR_FILENO);
 		ft_putstr_fd("`: not a valid identifier\n", STDERR_FILENO);
-		return (0);
+		return (EXIT_SUCCESS);
 	}
 	i = 1;
 	while (name[i] && name[i] != '=')
@@ -56,11 +56,11 @@ static int	is_valid_identifier(char *name)
 			ft_putstr_fd("chicken_shell: export: `", STDERR_FILENO);
 			ft_putstr_fd(name, STDERR_FILENO);
 			ft_putstr_fd("`: not a valid identifier\n", STDERR_FILENO);
-			return (0);
+			return (EXIT_SUCCESS);
 		}
 		i++;
 	}
-	return (1);
+	return (EXIT_FAILURE);
 }
 
 static int	is_option(char *s)
@@ -70,22 +70,22 @@ static int	is_option(char *s)
 		ft_putstr_fd("chicken: export: ", STDERR_FILENO);
 		ft_putstr_fd(s, STDERR_FILENO);
 		ft_putstr_fd(": invalid option\n", STDERR_FILENO);
-		ft_putstr_fd("export: usage: export [name[=value] ...]", STDERR_FILENO);
-		return (1);
+		ft_putstr_fd("export: usage: export name=value\n", STDERR_FILENO);
+		return (EXIT_FAILURE);
 	}
-	return (0);
+	return (EXIT_SUCCESS);
 }
 
-/* 
+/*
     expects argv input where argv[0] is the command name,
 	argv[1...] is command argument
     envp can be a copy of extern char **environ,
-	or **envp from the main function or a local copy ... 
+	or **envp from the main function or a local copy ...
 
     TODO: export VAR1=V1 VAR2=V2 VAR3=V3 ... DONE :)
     // Case 1: No arguments → Print all environment variables
-   
-	// Case 2: handle export VAR without updating its value 
+
+	// Case 2: handle export VAR without updating its value
 	// TODO:: check if var has a session value,
 	might be out of scope
     // Case 3: Set an environment variable (format: VAR=value)
@@ -106,21 +106,15 @@ int	chkn_export(char ***envp, char **argv)
 		if (is_option(argv[i]))
 			return (2);
 		if (!is_valid_identifier(argv[i]))
-			return (1);
+			return (EXIT_FAILURE);
 		equal_sign = ft_strchr(argv[i], '=');
 		if (equal_sign == NULL)
-			return (0);
+			return (EXIT_SUCCESS);
 		key = ft_substr(argv[1], 0, equal_sign - argv[1]);
 		if (set_env_var(envp, key, equal_sign + 1) != 0)
-			perror("chicken: export: ");
+			ft_putstr_fd("chicken: export: could not set env variable", 2);
 		i++;
 		free(key);
 	}
-	return (0);
+	return (EXIT_SUCCESS);
 }
-
-// int main(int argc, char **argv, char **env)
-// {
-// 	chkn_export(&env, argv);
-// 	return (0);
-// }

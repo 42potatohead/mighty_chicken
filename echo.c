@@ -30,17 +30,22 @@
 
 int	chkn_echo(char **argv)
 {
-	int	i;
+	int	i = 0;
 	int	err;
 
+	while(argv[i])
+	{
+		printf("WOOOOOOOO %s\n", argv[i]);
+		i++;
+	}
 	err = 0;
 	if (!argv[1])
 		err = printf("\n");
 	else
 	{
 		i = 1;
-		if (!ft_strncmp(argv[1], "-n", 2))
-			i = 2;
+		while (!ft_strncmp(argv[i], "-n", 2))
+			i++;
 		while (argv[i])
 		{
 			err = printf("%s", argv[i]);

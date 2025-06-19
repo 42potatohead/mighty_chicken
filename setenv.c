@@ -78,22 +78,21 @@ static int	append_new_var(char *new_var, int i, char ***envp)
 	return (0);
 }
 
-// free(new_var); 
-//not needed we shall clean the whole enviroment when shell is closed
+// free(new_var); -> //not needed we shall clean the whole enviroment when shell is closed
 int	set_env_var(char ***envp, const char *key, const char *value)
 {
 	int		i;
 	char	*new_var;
 
 	if (envp == NULL || key == NULL || value == NULL)
-		return (1);
+		return (EXIT_FAILURE);
 	new_var = join_key_value(key, value);
 	if (!new_var)
-		return (1);
+		return (EXIT_FAILURE);
 	i = replace_existing_var(envp, key, new_var);
 	if (i > 0)
 		return (append_new_var(new_var, i, envp));
-	return (0);
+	return (EXIT_SUCCESS);
 }
 
 char	*get_env_var(char **envp, const char *key)
@@ -108,7 +107,9 @@ char	*get_env_var(char **envp, const char *key)
 	while (envp[i])
 	{
 		if (ft_strncmp(envp[i], key, key_len) == 0 && envp[i][key_len] == '=')
+		{
 			return (envp[i] + key_len + 1); // Return pointer to value
+		}
 		i++;
 	}
 	return (NULL); // Not found

@@ -16,7 +16,7 @@
     Use chdir(path).
     Handle errors (e.g., invalid path).
     Update $PWD.
-    
+
     tests:
     - cd (with $HOME variable set correctly)
     - cd (with $HOME variable = "") -> do nothing

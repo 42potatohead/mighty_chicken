@@ -22,9 +22,9 @@ int	chkn_prnt_envp(char **argv, char **envp)
 	i = 0;
 	if (argv[i] != NULL)
 		i++;
-	if (i > 1)
+	if (i > 1) // make an invalid option err
 	{
-		ft_putstr_fd("chicken: env: too many arguments\n", STDERR_FILENO);
+		ft_putstr_fd("chicken: env: env does not take arguments\n", STDERR_FILENO);
 		return (1);
 	}
 	i = 0;

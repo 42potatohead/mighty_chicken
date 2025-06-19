@@ -32,6 +32,7 @@ t_ASTNode *parse_command(t_Token **tokens)
     int last_cmd = 0;
     char **args = malloc(sizeof(char *) * 10);
     int arg_count = 0;
+    int flag = 0;
     e_NodeType type;
 
     int i = 1;
@@ -43,7 +44,10 @@ t_ASTNode *parse_command(t_Token **tokens)
         if ((*tokens)->type == TOKEN_COMMAND)
             type = NODE_COMMAND;
         if ((*tokens)->type == TOKEN_BUILTIN)
+        {
+            flag = 1;
             type = NODE_BUILTIN;
+        }
         (*tokens)++;
         if ((*tokens)->type == TOKEN_END)
             last_cmd = 1;
@@ -51,6 +55,8 @@ t_ASTNode *parse_command(t_Token **tokens)
     }
     args[arg_count] = NULL;
 
+    if(flag == 1)
+        type = NODE_BUILTIN;
     return (create_node(type, args, NULL, NULL, last_cmd));
 }
 

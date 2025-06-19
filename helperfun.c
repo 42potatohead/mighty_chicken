@@ -1,9 +1,20 @@
 #include "chicken.h"
 
-char *strdup_wrapper(char *(*f)(const char *), const char *s)
+char	*ft_strndup(const char *s, int len)
 {
-	char *result = f(s);
-	if (!result)
-		return NULL;
-	return result;
+	char	*ns;
+	size_t	len;
+	size_t	i;
+
+	ns = (char *)malloc((len + 1) * sizeof(char));
+	if (ns == NULL)
+		return (NULL);
+	i = 0;
+	while (i < len)
+	{
+		ns[i] = s[i];
+		i++;
+	}
+	ns[i] = '\0';
+	return (ns);
 }

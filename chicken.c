@@ -18,12 +18,13 @@
 #include <stdlib.h>
 #include <readline/readline.h>
 #include <readline/history.h>
-int status = EXIT_SUCCESS;
 
 void init_var(t_grand *grand)
 {
     grand->chicken.input = NULL;
+    grand->env.full_path = NULL;
     grand->chicken.token_count = 0;
+    grand->chicken.status = 0;
 }
 
 void free_ast(t_ASTNode *node)
@@ -98,81 +99,6 @@ void print_ast(t_ASTNode *node, int depth) {
 //             }
 //         }
 
-void execute(t_ASTNode *node, t_grand *grand)
-{
-    if (!node)
-    return;
-
-    if (node->type == NODE_COMMAND || node->type == NODE_BUILTIN)
-    {
-        printf("Executing command: %s %s\n", node->args[0], node->args[1] ? node->args[1] : "");
-        // If not a built-in command, execute it as an external command
-        if(node->type == NODE_BUILTIN)
-        {
-            printf("Executing built-in command: %s\n", node->args[0]);
-            chkn_cd(node->args, &grand->env.envp); // Assuming you have a function to handle cd
-        }
-        else if (fork() == 0)
-        {
-            execvp(node->args[0], node->args);
-            if (node->last_cmd == 1)
-                status = errno;
-            ft_printf("status %d", status);
-            perror("execvp");
-            exit(status);
-        }
-        wait(&status);
-        status = WEXITSTATUS(status);
-    }
-    else if (node->type == NODE_PIPE)
-    {
-        int fd[2];
-        pipe(fd);
-        if (fork() == 0)
-        {
-            dup2(fd[1], STDOUT_FILENO);
-            close(fd[0]);
-            close(fd[1]);
-            execute(node->left, grand);
-            exit(status);
-        }
-        if (fork() == 0)
-        {
-            dup2(fd[0], STDIN_FILENO);
-            close(fd[0]);
-            close(fd[1]);
-            execute(node->right, grand);
-            exit(status);
-        }
-        close(fd[0]);
-        close(fd[1]);
-        wait(&status);
-        wait(&status);
-        // printf("%d\n", status);
-        // if (WEXITSTATUS(status) == 2)
-        //         printf("cmd not found \n");
-    }
-}
-
-void execute_command(t_ASTNode *node)
-{
-    printf("node value %s node type %d\n----------------\n", node->args[0], node->type);
-    if (node->type == NODE_COMMAND)
-    {
-        if (fork() == 0)
-        {
-            char *cmdpath = ft_strjoin(getenv("PATH"), node->args[0]);
-
-            if(execve(cmdpath, node->args, NULL) == -1)
-                printf("Command Not Found\n");
-        }
-        else
-        {
-            wait(NULL);
-        }
-    }
-}
-
 
 
 // t_ASTNode *parse_expression(t_Token **tokens)
@@ -217,21 +143,6 @@ void execute_command(t_ASTNode *node)
 //     }
 // }
 
-void process_input(t_grand *grand)
-{
-    if (ft_strchr(grand->chicken.input, '\'') || ft_strchr(grand->chicken.input, '"'))
-    {
-        printf("so sad\n");
-        exit(42);
-    }
-    else
-    {
-        grand->chicken.tokens = ft_split(grand->chicken.input, ' ');
-        // exec_input(grand);
-    }
-
-}
-
 void sigint_handler(int sig)
 {
     (void)sig;
@@ -241,7 +152,8 @@ void sigint_handler(int sig)
     rl_redisplay(); // Redisplay the prompt
 }
 
-char **copy_env(char **envp) {
+char **copy_env(char **envp)
+{
     int count = 0;
     while (envp[count]) count++;
 
@@ -276,7 +188,7 @@ int main(int argc, char **argv, char **envp)
             break;
         grand.chicken.token_count = 0;
         if (grand.chicken.input)
-            Tokens = lexer((const char *)grand.chicken.input, &grand);
+            Tokens = lexer(grand.chicken.input, &grand);
         ast = parse_expression(&Tokens);
         printf("%d", ast->type);
         print_ast(ast, 0);
@@ -286,7 +198,7 @@ int main(int argc, char **argv, char **envp)
         {
             execute(ast, &grand);
         }
-        ft_printf("errno %d\n", WEXITSTATUS(status));
+        ft_printf("errno %d\n", WEXITSTATUS(grand.chicken.status));
 
 
         // Add input to history (optional)

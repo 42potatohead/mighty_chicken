@@ -40,7 +40,7 @@ static void	unset_var(char ***envp, const char *key)
 	len = ft_strlen(key);
 	i = 0;
 	j = 0;
-	while (env[i])
+	while (len != 0 && env[i])
 	{
 		if (ft_strncmp(env[i], key, len) == 0 && env[i][len] == '=')
 		{
@@ -51,7 +51,7 @@ static void	unset_var(char ***envp, const char *key)
 	}
 	env[j] = NULL;
 }
-
+// add is option check
 int	chkn_unset(char ***envp, char **argv)
 {
 	int	i;
@@ -68,29 +68,29 @@ int	chkn_unset(char ***envp, char **argv)
 	}
 	return (EXIT_SUCCESS);
 }
-char **copy_env(char **envp) {
-    int count = 0;
-    while (envp[count]) count++;
+// char **copy_env(char **envp) {
+//     int count = 0;
+//     while (envp[count]) count++;
 
-    char **new_env = malloc(sizeof(char *) * (count + 1));
-    if (!new_env) return (NULL);
+//     char **new_env = malloc(sizeof(char *) * (count + 1));
+//     if (!new_env) return (NULL);
 
-    for (int i = 0; i < count; i++)
-        new_env[i] = strdup(envp[i]);
-    new_env[count] = NULL;
-    return (new_env);
-}
+//     for (int i = 0; i < count; i++)
+//         new_env[i] = strdup(envp[i]);
+//     new_env[count] = NULL;
+//     return (new_env);
+// }
 
-int main(int argc, char **argv, char **envp)
-{
-	char **env;
+// int main(int argc, char **argv, char **envp)
+// {
+// 	char **env;
 
-	env = copy_env(envp);
-	char *arg[] = {"aaa=99", "aaa=99", NULL};
-	chkn_export(&envp, arg);
-	chkn_prnt_envp(arg, envp);
-	arg[1] = "aaa";
-	chkn_unset(&envp, arg);
-	chkn_prnt_envp(arg, envp);
-	return 0;
-}
+// 	env = copy_env(envp);
+// 	char *arg[] = {"aaa=99", "aaa=99", NULL};
+// 	chkn_export(&envp, arg);
+// 	chkn_prnt_envp(arg, envp);
+// 	arg[1] = "aaa";
+// 	chkn_unset(&envp, arg);
+// 	chkn_prnt_envp(arg, envp);
+// 	return (EXIT_SUCCESS);
+// }
