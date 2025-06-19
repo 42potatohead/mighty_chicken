@@ -102,8 +102,8 @@ int lex_expression(t_Token *tokens, t_grand *grand, const char *input)
 
 void    quotes(char **input, int *space)
 {
-    if(**input == 39 && *space == 0)
-        (*input)++;
+    // if(**input == 39 && *space == 0)
+    //     (*input)++;
     if (*space == 1)
         (*space) = -1;
     if (*input && **input == 39)
@@ -125,18 +125,15 @@ t_Token *lexer(char *input, t_grand *grand)
     while(*input)
     {
         quotes(&input, &space);
-        while(isspace(*input) && space == -1)
+        while(isspace(*input) && space <= 0)
             input++;
         if(!lex_expression(tokens, grand, input)) // command
         {
             char *start = input;
-            while (*input && !ft_strchr("|<>", *input))
+            while (*input && !ft_strchr("|<>'", *input))
             {
                 if(isspace(*input) && space <= 0 || *input == 39)
-                {
-                    space++;
                     break;
-                }
                 input++;
             }
             tokens[grand->chicken.token_count++] = create_token(TOKEN_COMMAND, start, input - start, grand);

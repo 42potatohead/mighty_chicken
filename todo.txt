@@ -1,4 +1,0 @@
-norm everything
-
-redirect
-cleanup function
