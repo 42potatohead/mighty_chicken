@@ -7,7 +7,7 @@ SRC = chicken.c \
 	  lexicaltokenizer.c \
 	  parser.c \
 	  setenv.c \
-	  cd.c echo.c env.c exit.c export.c pwd.c unset.c chkn_execute.c get_path.c
+	  cd.c echo.c env.c exit.c export.c pwd.c unset.c chkn_execute.c get_path.c redirect.c expand.c
 
 OBJ = $(SRC:.c=.o)
 

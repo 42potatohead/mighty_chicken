@@ -116,4 +116,5 @@ int	chkn_exit(char **argv)
 		ft_putstr_fd("exit\n", STDERR_FILENO);
 		exit((unsigned char)ft_atoi(argv[1]));
 	}
+	return (EXIT_SUCCESS);
 }

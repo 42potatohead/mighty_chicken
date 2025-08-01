@@ -44,7 +44,7 @@ int	chkn_echo(char **argv)
 	else
 	{
 		i = 1;
-		while (!ft_strncmp(argv[i], "-n", 2))
+		while (argv[i] && !ft_strncmp(argv[i], "-n", 2))
 			i++;
 		while (argv[i])
 		{

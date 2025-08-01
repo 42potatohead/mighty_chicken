@@ -114,3 +114,25 @@ char	*get_env_var(char **envp, const char *key)
 	}
 	return (NULL); // Not found
 }
+
+char	*get_env_var2(char **envp, char *key)
+{
+	size_t	key_len;
+	int		i;
+
+	if (!envp || !key)
+		return (NULL);
+	key_len = strlen(key)-1;
+	if (*key == '$')
+		key++;
+	i = 0;
+	while (envp[i])
+	{
+		if (ft_strncmp(envp[i], key, key_len) == 0 && envp[i][key_len] == '=')
+		{
+			return (envp[i] + key_len + 1); // Return pointer to value
+		}
+		i++;
+	}
+	return (NULL); // Not found
+}

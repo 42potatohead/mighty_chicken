@@ -19,12 +19,19 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 
+volatile sig_atomic_t g_received_signal = 0; // Global variable to control the loop
+
 void init_var(t_grand *grand)
 {
     grand->chicken.input = NULL;
     grand->env.full_path = NULL;
     grand->chicken.token_count = 0;
     grand->chicken.status = 0;
+    grand->saved_stdin = -3;
+    grand->saved_stdout = -3;
+    grand->qoutes = 0;
+    grand->in_single = 0;
+    grand->in_double = 0;
 }
 
 void free_ast(t_ASTNode *node)
@@ -49,15 +56,17 @@ void free_tokens(t_Token *tokens, int count)
     if (!tokens)
         return;
 
-    int i = count * -1;
-    tokens = tokens - count; // Adjust pointer to point to the last token
-    while (i < 0)
+    int i = 0;
+    while (i < count && tokens[i].type != TOKEN_END)
     {
-        printf("freeing token %s\n", tokens[i].value);
         if (tokens[i].value)
             free(tokens[i].value);
-            i++;
+        i++;
     }
+    // Free the TOKEN_END value if it exists
+    if (i < count && tokens[i].type == TOKEN_END && tokens[i].value)
+        free(tokens[i].value);
+
     free(tokens);
 }
 
@@ -145,11 +154,15 @@ void print_ast(t_ASTNode *node, int depth) {
 
 void sigint_handler(int sig)
 {
-    (void)sig;
-    printf("\n"); // Move to a new line
-    rl_on_new_line(); // Tell readline to move to a new line
-    rl_replace_line("", 0); // Clear the current input
-    rl_redisplay(); // Redisplay the prompt
+    if (sig == SIGINT)
+    {
+        g_received_signal = SIGINT;
+        if (g_received_signal == SIGINT)
+        printf("\n"); // Move to a new line
+        rl_replace_line("", 0); // Clear the current input
+        rl_on_new_line(); // Tell readline to move to a new line
+        rl_redisplay(); // Redisplay the prompt
+    }
 }
 
 char **copy_env(char **envp)
@@ -166,12 +179,26 @@ char **copy_env(char **envp)
     return new_env;
 }
 
+void free_env(char **envp)
+{
+    if (!envp) return;
+
+    int i = 0;
+    while (envp[i]) {
+        free(envp[i]);
+        i++;
+    }
+    free(envp);
+}
+
 int main(int argc, char **argv, char **envp)
 {
     t_grand grand;
     t_Token *Tokens;
     t_ASTNode *ast;
 
+    (void)argc;
+    (void)argv;
     grand.env.envp = copy_env(envp);
     init_var(&grand);
     print_banner();
@@ -182,23 +209,30 @@ int main(int argc, char **argv, char **envp)
     // int i = 0;
     while (quacking) {
         // Display prompt and get user input
-        grand.chicken.input = readline("\033[1;36mquack> \033[0m ");
+        grand.chicken.input = readline("\001\033[1;36m\002quack> \001\033[0m\002 ");
         // If user pressed Ctrl+D (EOF), exit the loop
         if (!grand.chicken.input)
             break;
+        if (g_received_signal == SIGINT)
+        {
+            g_received_signal = 0; // Reset the signal
+            grand.chicken.status = 130; // Set status for Ctrl-C
+            // free(grand.chicken.input);
+            // continue; // Skip to the next iteration
+        }
         grand.chicken.token_count = 0;
         if (grand.chicken.input)
             Tokens = lexer(grand.chicken.input, &grand);
-        ast = parse_expression(&Tokens);
-        printf("%d", ast->type);
-        print_ast(ast, 0);
+        ast = parse_expression(&Tokens, &grand);
+        // printf("%d", ast->type);
+        // print_ast(ast, 0);
         // printf("left = %s right = %s\n", ast->left->args[0], ast->right->args[0]);
         // execute commands and pipes turn it into where to send eg builtin commands etc
-        if (ast && (ast->type == NODE_COMMAND || ast->type == NODE_PIPE || ast->type == NODE_BUILTIN))
+        if (ast && (ast->type == NODE_COMMAND || ast->type == NODE_PIPE || ast->type == NODE_BUILTIN) && grand.chicken.status != 13)
         {
             execute(ast, &grand);
         }
-        ft_printf("errno %d\n", WEXITSTATUS(grand.chicken.status));
+        ft_printf("errno %d\n", grand.chicken.status);
 
 
         // Add input to history (optional)
@@ -211,9 +245,14 @@ int main(int argc, char **argv, char **envp)
         // i++;
         // if(ast)
         //     free_ast(ast);
+        // if (Tokens)
+        //     free_tokens(Tokens, grand.chicken.token_count);
+        dup2(grand.saved_stdin, 0);
+        dup2(grand.saved_stdout, 1);
         free(grand.chicken.input);
     }
 
     printf("Exiting mighty_chicken...\n");
-    return 0;
+    free_env(grand.env.envp);
+    return (0);
 }
