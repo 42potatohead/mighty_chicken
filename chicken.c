@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   mighty_chick.c                                     :+:      :+:    :+:   */
+/*   chicken.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ataan <ataan@student.42amman.com>          +#+  +:+       +#+        */
+/*   By: zabu-bak <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/20 13:59:48 by ataan             #+#    #+#             */
-/*   Updated: 2025/02/20 13:59:48 by ataan            ###   ########.fr       */
+/*   Updated: 2025/08/01 18:26:47 by zabu-bak         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,23 +79,6 @@ void print_banner(void)
     "╚██████╗██║  ██║██║╚██████╗██║  ██╗███████╗██║ ╚████║    ███████║██║  ██║███████╗███████╗███████╗     ╚████╔╝  ██║██╗╚██████╔╝\n"
     "╚═════╝╚═╝  ╚═╝╚═╝ ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═══╝    ╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝      ╚═══╝   ╚═╝╚═╝ ╚═════╝ \n");
 
-}
-
-
-void print_ast(t_ASTNode *node, int depth) {
-    if (!node) return;
-    for (int i = 0; i < depth; i++) printf("  ");
-
-    int z = 0;
-    switch (node->type) {
-        case NODE_COMMAND:
-        printf("COMMAND:\n");
-        for (int i = 0; node->args[i]; i++) printf("%d %s\n",z++, node->args[i]);
-        printf("\n");
-        break;
-        default:
-        printf("UNKNOWN NODE\n");
-    }
 }
 
 // if (node->type != NODE_BUILTIN)

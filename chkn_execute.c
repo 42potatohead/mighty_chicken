@@ -14,6 +14,7 @@ void should_redirect(t_ASTNode *node)
 
 void call_builtin(t_ASTNode *node, t_grand *grand)
 {
+    should_redirect(node);
      printf("Executing built-in command: %s\n", node->args[0]);
     if (!ft_strncmp(node->args[0], "cd", 2))
         chkn_cd(node->args, &grand->env.envp);
@@ -39,10 +40,7 @@ void execute_command(t_ASTNode *node, t_grand *grand)
         printf("Executing command: %s %s\n", node->args[0], node->args[1] ? node->args[1] : "");
         // If not a built-in command, execute it as an external command
         if(node->type == NODE_BUILTIN)
-        {
-            should_redirect(node);
             call_builtin(node, grand);
-        }
         else if (fork() == 0)
         {
             printf("in %d out %d\n\n\n\n", node->std_in, node->std_out);
@@ -70,7 +68,6 @@ void execute_command(t_ASTNode *node, t_grand *grand)
             grand->chicken.status = 128 + WTERMSIG(grand->chicken.status);
         // grand->chicken.status = WEXITSTATUS(grand->chicken.status);
         signal(SIGINT, sigint_handler);
-
     }
 }
 
@@ -86,6 +83,21 @@ void close_wait(int fd[2], t_grand *grand)
     signal(SIGINT, sigint_handler);
 }
 
+void fork_logic(t_ASTNode *node, t_grand *grand, int fd[2], int flag)
+{
+    signal(SIGINT, SIG_DFL);
+    if (flag == 0)
+        dup2(fd[1], STDOUT_FILENO);
+    else
+        dup2(fd[0], STDIN_FILENO);
+    close(fd[0]);
+    close(fd[1]);
+    execute(node, grand);
+    dup2(grand->saved_stdin, STDIN_FILENO);
+    dup2(grand->saved_stdout, STDOUT_FILENO);
+    exit(grand->chicken.status);
+}
+
 void execute(t_ASTNode *node, t_grand *grand)
 {
     if (!node)
@@ -97,25 +109,11 @@ void execute(t_ASTNode *node, t_grand *grand)
         pipe(fd);
         if (fork() == 0)
         {
-            signal(SIGINT, SIG_DFL);
-            dup2(fd[1], STDOUT_FILENO);
-            close(fd[0]);
-            close(fd[1]);
-            execute(node->left, grand);
-            dup2(grand->saved_stdin, STDIN_FILENO);
-            dup2(grand->saved_stdout, STDOUT_FILENO);
-            exit(grand->chicken.status);
+            fork_logic(node->left, grand, fd, 0);
         }
         if (fork() == 0)
         {
-            signal(SIGINT, SIG_DFL);
-            dup2(fd[0], STDIN_FILENO);
-            close(fd[0]);
-            close(fd[1]);
-            execute(node->right, grand);
-            dup2(grand->saved_stdin, STDIN_FILENO);
-            dup2(grand->saved_stdout, STDOUT_FILENO);
-            exit(grand->chicken.status);
+            fork_logic(node->right, grand, fd, 1);
         }
         close_wait(fd, grand);
         grand->chicken.status = WEXITSTATUS(grand->chicken.status);
