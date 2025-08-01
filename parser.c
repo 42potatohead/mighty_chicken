@@ -27,7 +27,10 @@ t_ASTNode *create_node(e_NodeType type, char **args, t_ASTNode *left, t_ASTNode 
 
 int parse_in(t_Token **tokens, t_grand *grand)
 {
-    int std_in = 0;
+    int std_in;
+    int std_out;
+
+    std_in = 0;
     if((*tokens)->type == TOKEN_REDIRECT_IN)
     {
         std_in = handle_redirect(*tokens, grand);
@@ -35,8 +38,18 @@ int parse_in(t_Token **tokens, t_grand *grand)
             return (-1);
         (*tokens) += 2; // Skip the redirect token and the file name
         printf("we are on token %s\n", (*tokens)->value);
+        return (std_in);
     }
-    return (std_in);
+    std_out = 1;
+    if((*tokens)->type == TOKEN_REDIRECT_OUT)
+    {
+        std_out = handle_redirect(*tokens, grand);
+        if(std_out == -1)
+            return (NULL);
+        (*tokens) += 2;
+        return (std_out);
+    }
+    return (EXIT_FAILURE);
 }
 
 /*
@@ -53,14 +66,6 @@ t_ASTNode *parse_command(t_Token **tokens, t_grand *grand)
     int std_in = 0;
     int std_out = 1;
 
-    // if((*tokens)->type == TOKEN_REDIRECT_IN)
-    // {
-    //     std_in = handle_redirect(*tokens, grand);
-    //     if(std_in == -1)
-    //         return (NULL);
-    //     (*tokens) += 2; // Skip the redirect token and the file name
-    //     printf("we are on token %s\n", (*tokens)->value);
-    // }
     if((*tokens)->type == TOKEN_HEREDOC)
     {
         handle_redirect(*tokens, grand);
@@ -95,12 +100,7 @@ t_ASTNode *parse_command(t_Token **tokens, t_grand *grand)
         (*tokens)++;
     }
     if((*tokens)->type == TOKEN_REDIRECT_OUT)
-    {
-        std_out = handle_redirect(*tokens, grand);
-        if(std_out == -1)
-            return (NULL);
-        (*tokens) += 2;
-    }
+        std_out = parse_in(tokens, grand);
 
     if(flag == 1)
         type = NODE_BUILTIN;

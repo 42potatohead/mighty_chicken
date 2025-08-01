@@ -1,29 +1,5 @@
 #include "chicken.h"
 
-// int count_tokens(char *input)
-// {
-//     int count = 0;
-//     int i = 0;
-//     while(input[i])
-//     {
-//         while(isspace(input[i]))
-//             input++;
-//         if(input[i] == '|' || input[i] == '>' || input[i] == '<' || (input[i] == '>' && input[i + 1] == '>'))
-//             count++;
-//         else
-//         {
-//             // const char *start = input;
-//             while (*input && !isspace(input[i]) && !ft_strchr("|<>", input[i]))
-//                 i++;
-//             count++;
-//         }
-//         if (input[i])
-//             i++; // fix garbage
-//     }
-//     printf("count %d\n", count);
-//     return (count);
-// }
-
 int	ft_isspace(int c)
 {
 	if (c == '\t' || c == '\n' || c == '\v' || c == '\f' || c == '\r'
@@ -84,13 +60,26 @@ int count_tokens(char *input)
     return count;
 }
 
-int catagory(char *value)
+int is_builtin(char *value)
 {
-    if (!ft_strncmp(value, "cd", 2) || !ft_strncmp(value, "echo", ft_strlen(value)) || !ft_strncmp(value, "env", 3) ||
-        !ft_strncmp(value, "exit", 4) || !ft_strncmp(value, "export", 6) || !ft_strncmp(value, "unset", 5) ||
-        !ft_strncmp(value, "pwd", 3))
+    if(!ft_strncmp(value, "cd", ft_strlen(value)) ||
+        !ft_strncmp(value, "echo", ft_strlen(value)) ||
+        !ft_strncmp(value, "env", ft_strlen(value)) ||
+        !ft_strncmp(value, "exit", ft_strlen(value)) ||
+        !ft_strncmp(value, "export", ft_strlen(value)) ||
+        !ft_strncmp(value, "unset", ft_strlen(value)) ||
+        !ft_strncmp(value, "pwd", ft_strlen(value)))
+        return (EXIT_SUCCESS);
+    else
+        return (EXIT_FAILURE);
+}
+
+int catagory(char *value,t_grand *grand)
+{
+    printf("token_counter %d\n", grand->token_counter);
+    if (is_builtin(value) == EXIT_SUCCESS && grand->token_counter == 1)
         return (TOKEN_BUILTIN);
-    else if (!ft_strncmp(value, "|", 8))
+    else if (!ft_strncmp(value, "|", 1))
         return (TOKEN_PIPE);
     else if (!ft_strncmp(value, ">", 1))
         return (TOKEN_REDIRECT_OUT);
@@ -124,7 +113,7 @@ t_Token create_token(e_TokenType type, char *value, int len, t_grand *grand)
         token.value = expand_variables(temp, grand);
     printf("token.v = %s, len = %d, type = %d\n", token.value, len, type);
 
-    token.type = catagory(temp);
+    token.type = catagory(temp, grand);
     if (!token.value) //should this chck for value or type?
     {
         perror("Failed to allocate memory for token value");
@@ -141,30 +130,35 @@ int lex_expression(t_Token *tokens, t_grand *grand, char **input)
     {
         tokens[grand->chicken.token_count++] = create_token(TOKEN_PIPE, "|", 1, grand);
         (*input)++;
+        grand->token_counter = 0;
         return (1);
     }
     else if(**input == '>' && *(*input + 1) == '>')
     {
         tokens[grand->chicken.token_count++] = create_token(TOKEN_APPENOUT, ">>", 2, grand);
         (*input) += 2; // Skip the second '>'
+        grand->token_counter = 0;
         return (1);
     }
     else if (**input == '<' && *(*input + 1) == '<')
     {
         tokens[grand->chicken.token_count++] = create_token(TOKEN_HEREDOC, "<<", 2, grand);
         (*input) += 2; // Skip the second '<'
+        grand->token_counter = 0;
         return (1);
     }
     else if(**input == '>')
     {
         tokens[grand->chicken.token_count++] = create_token(TOKEN_REDIRECT_OUT, ">", 1, grand);
         (*input)++;
+        grand->token_counter = 0;
         return (1);
     }
     else if(**input == '<')
     {
         tokens[grand->chicken.token_count++] = create_token(TOKEN_REDIRECT_IN, "<", 1, grand);
         (*input)++;
+        grand->token_counter = -1;
         return (1);
     }
     return (0);
@@ -207,9 +201,10 @@ void verify_token(t_grand *grand, t_Token *tokens, char *start, char *input)
 */
 t_Token *lexer(char *input, t_grand *grand)
 {
-    t_Token *tokens = malloc(sizeof(t_Token) * (count_tokens((char *)input) + 1));
+    t_Token *tokens;
     int space;
 
+    tokens = malloc(sizeof(t_Token) * (count_tokens((char *)input) + 1));
     space = -1;
     while(*input)
     {
@@ -226,17 +221,15 @@ t_Token *lexer(char *input, t_grand *grand)
                     break;
                 input++;
             }
+            grand->token_counter++;
             grand->qoutes = 0; //reset after use
             verify_token(grand, tokens, start, input);
         }
-        // if (*input)
-        //     input++; // used to skip pipe, now handled in lex_expression
     }
     tokens[grand->chicken.token_count++] = (t_Token){TOKEN_END, NULL};
     return (tokens);
 }
 
-// with I
 // t_Token *lexer(const char *input, t_grand *grand)
 // {
 //     t_Token *tokens = malloc(sizeof(t_Token) * 100);

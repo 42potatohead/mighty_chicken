@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   chicken.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ataan <ataan@student.42amman.com>          +#+  +:+       +#+        */
+/*   By: zabu-bak <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/20 14:02:19 by ataan             #+#    #+#             */
-/*   Updated: 2025/08/01 18:55:49 by ataan            ###   ########.fr       */
+/*   Updated: 2025/08/01 20:47:43 by zabu-bak         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,6 @@ typedef struct s_ASTNode
     struct s_ASTNode *right;
     int std_in;
     int std_out;
-    int *flags; // For builtins or options
 } t_ASTNode;
 
 typedef struct s_chicken
@@ -100,6 +99,7 @@ typedef struct s_grand
     int qoutes;
     int in_single;
     int in_double;
+    int token_counter;
 } t_grand;
 
 t_Token *lexer(char *input, t_grand *grand);

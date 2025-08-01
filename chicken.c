@@ -6,7 +6,7 @@
 /*   By: zabu-bak <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/20 13:59:48 by ataan             #+#    #+#             */
-/*   Updated: 2025/08/01 18:26:47 by zabu-bak         ###   ########.fr       */
+/*   Updated: 2025/08/01 20:04:43 by zabu-bak         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -196,6 +196,7 @@ int main(int argc, char **argv, char **envp)
         // If user pressed Ctrl+D (EOF), exit the loop
         if (!grand.chicken.input)
             break;
+        grand.token_counter = 0;
         if (g_received_signal == SIGINT)
         {
             g_received_signal = 0; // Reset the signal
