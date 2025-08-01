@@ -6,7 +6,7 @@
 /*   By: ataan <ataan@student.42amman.com>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 14:26:46 by ataan             #+#    #+#             */
-/*   Updated: 2025/06/11 14:26:47 by ataan            ###   ########.fr       */
+/*   Updated: 2025/08/01 19:26:21 by ataan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,9 +27,8 @@ static int	is_option(char *s)
 
 /* pwd doesnot care for argument,
 	if u do pwd xxx in bash cwd is printed without err */
-int	chkn_pwd(char **argv)
+int	chkn_pwd(char **argv, char **envp)
 {
-	char	cwd[PATH_MAX];
 	int		i;
 
 	if (argv == NULL)
@@ -41,11 +40,11 @@ int	chkn_pwd(char **argv)
 			return (2);
 		i++;
 	}
-	if (getcwd(cwd, PATH_MAX) == NULL)
+	if (get_env_var(envp, "PWD") == NULL)
 	{
-		perror("getcwd");
+		perror("get directory error");
 		return (EXIT_FAILURE);
 	}
-	ft_printf("%s\n", cwd);
+	ft_printf("%s\n", get_env_var(envp, "PWD"));
 	return (EXIT_SUCCESS);
 }

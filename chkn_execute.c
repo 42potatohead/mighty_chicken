@@ -27,7 +27,7 @@ void call_builtin(t_ASTNode *node, t_grand *grand)
     else if (!ft_strncmp(node->args[0], "export", 6))
         chkn_export(&grand->env.envp, node->args);
     else if (!ft_strncmp(node->args[0], "pwd", 3))
-        chkn_pwd(node->args);
+        chkn_pwd(node->args, grand->env.envp);
     else if (!ft_strncmp(node->args[0], "unset", 3))
         chkn_unset(&grand->env.envp, node->args);
 }

@@ -6,7 +6,7 @@
 /*   By: ataan <ataan@student.42amman.com>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/20 14:02:19 by ataan             #+#    #+#             */
-/*   Updated: 2025/02/20 14:02:19 by ataan            ###   ########.fr       */
+/*   Updated: 2025/08/01 18:55:49 by ataan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,7 +117,7 @@ int set_env_var(char ***envp, const char *key, const char *value);
 int chkn_unset(char ***envp, char **argv);
 int chkn_export(char ***envp, char **argv);
 int chkn_exit(char **argv);
-int	chkn_pwd(char **argv);
+int	chkn_pwd(char **argv, char **envp);
 int chkn_echo(char **argv);
 int	chkn_prnt_envp(char **argv, char **envp);
 void sigint_handler(int sig);

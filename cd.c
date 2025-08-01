@@ -6,7 +6,7 @@
 /*   By: ataan <ataan@student.42amman.com>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 17:09:43 by ataan             #+#    #+#             */
-/*   Updated: 2025/06/13 19:17:11 by ataan            ###   ########.fr       */
+/*   Updated: 2025/08/01 19:26:00 by ataan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,12 +78,11 @@ static char	*cd_new_dir(int argc, char **argv, char **envp)
 	return (new_dir);
 }
 
-static char	*cd_old_dir(void)
+static char	*cd_old_dir(char **envp)
 {
-	char	cwd[PATH_MAX];
 	char	*old_pwd;
 
-	old_pwd = ft_strdup(getcwd(cwd, sizeof(cwd)));
+	old_pwd = ft_strdup(get_env_var(envp, "PWD"));
 	if (old_pwd == NULL)
 		return (NULL);
 	return (old_pwd);
@@ -106,7 +105,7 @@ int	chkn_cd(char **argv, char ***envp)
 	ret = 0;
 	if (cd_arg_check(argv, envp))
 		return (EXIT_FAILURE);
-	old_pwd = cd_old_dir();
+	old_pwd = cd_old_dir(*envp);
 	new_pwd = cd_new_dir(count_arg(argv), argv, *envp);
 	if (new_pwd == NULL || old_pwd == NULL)
 	{
