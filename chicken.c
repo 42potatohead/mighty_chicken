@@ -6,7 +6,7 @@
 /*   By: zabu-bak <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/20 13:59:48 by ataan             #+#    #+#             */
-/*   Updated: 2025/08/02 18:00:38 by zabu-bak         ###   ########.fr       */
+/*   Updated: 2025/08/02 20:03:23 by zabu-bak         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,50 @@ void init_var(t_grand *grand)
     grand->astatrr = malloc(sizeof(t_ASTatrr) * 1);
 }
 
+// void    close_redirection_fds(void)
+// {
+//     // Close all file descriptors except stdin, stdout, stderr
+//     // This assumes you have saved the original stdin/stdout in grand->saved_stdin/stdout
+//     // and have duplicated them for redirections.
+//     // Here, we restore them and close any other open fds if needed.
 
+//     // Restore original stdin and stdout if they were redirected
+//     if (grand->saved_stdin != -3) {
+//         dup2(grand->saved_stdin, STDIN_FILENO);
+//         close(grand->saved_stdin);
+//         grand->saved_stdin = -3;
+//     }
+//     if (grand->saved_stdout != -3) {
+//         dup2(grand->saved_stdout, STDOUT_FILENO);
+//         close(grand->saved_stdout);
+//         grand->saved_stdout = -3;
+//     }
+//     // If you have opened extra fds for heredoc or redirections, close them here.
+//     // Example:
+//     // if (grand->heredoc_fd > 2) {
+//     //     close(grand->heredoc_fd);
+//     //     grand->heredoc_fd = -1;
+//     // }
+// }
+
+void free_ast(t_ASTNode *ast)
+{
+    if (!ast)
+        return;
+
+    if (ast->left)
+        free_ast(ast->left);
+    if (ast->right)
+        free_ast(ast->right);
+
+    if (ast->args)
+    {
+        for (int i = 0; ast->args[i]; i++)
+            free(ast->args[i]);
+        free(ast->args);
+    }
+    free(ast);
+}
 
 void free_tokens(t_Token *tokens, int count)
 {
@@ -106,18 +149,19 @@ void free_env(char **envp)
     free(envp);
 }
 
-void clean_exit(t_grand *grand, t_Token *tokens, t_ASTNode *ast)
-{
-    free_tokens(tokens, grand->chicken.token_count);
-    free_ast(ast);
-    close_redirection_fds();
-}
+// void clean_exit(t_grand *grand, t_Token *tokens, t_ASTNode *ast)
+// {
+//     free_tokens(tokens, grand->chicken.token_count);
+//     free_ast(ast);
+//     // close_redirection_fds();
+// }
 
 int main(int argc, char **argv, char **envp)
 {
     t_grand grand;
     t_Token *tokens;
     t_ASTNode *ast;
+    t_Token *original_tokens; // Add this
 
     (void)argc;
     (void)argv;
@@ -141,11 +185,23 @@ int main(int argc, char **argv, char **envp)
         }
         grand.chicken.token_count = 0;
         if (grand.chicken.input)
+        {
             tokens = lexer(grand.chicken.input, &grand);
+            original_tokens = tokens; // Store original pointer
+        }
         ast = parse_expression(&tokens, &grand);
         if (ast /*&& grand.chicken.status != 13*/)
         {
             execute(ast, &grand);
+            while (ast)
+            {
+                if (ast->std_in > 2)
+                    close(ast->std_in);
+                printf("std_out %d\n", ast->std_out);
+                if (ast->std_out > 2)
+                    close(ast->std_out);
+                ast = ast->right;
+            }
         }
         ft_printf("errno %d\n", grand.chicken.status);
         if (*grand.chicken.input)
@@ -155,14 +211,22 @@ int main(int argc, char **argv, char **envp)
         // if (i == 1)
         //     free_tokens(tokens, grand.chicken.token_count);
         // i++;
-        // if(ast)
-        //     free_ast(ast);
-        // if (tokens)
-            free_tokens(tokens, grand.chicken.token_count);
+        free_ast(ast);
+        if (tokens)
+            free_tokens(original_tokens, grand.chicken.token_count);
+        if (grand.saved_stdin > 2)
+            close(STDIN_FILENO);
+        if (grand.saved_stdout > 2)
+            close(STDOUT_FILENO);
+        close(grand.saved_stdout);
+
+
         dup2(grand.saved_stdin, 0);
         dup2(grand.saved_stdout, 1);
         free(grand.chicken.input);
+        break;
     }
+	free(grand.astatrr);
     free_env(grand.env.envp);
     return (0);
 }
