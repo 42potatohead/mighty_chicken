@@ -6,7 +6,7 @@
 /*   By: ataan <ataan@student.42amman.com>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 17:09:22 by ataan             #+#    #+#             */
-/*   Updated: 2025/06/10 17:09:23 by ataan            ###   ########.fr       */
+/*   Updated: 2025/08/01 23:19:06 by ataan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,10 +30,11 @@
 
 int	chkn_echo(char **argv)
 {
-	int	i = 0;
+	int	i;
 	int	err;
 
-	while(argv[i])
+	i = 0;
+	while (argv[i])
 	{
 		printf("WOOOOOOOO %s\n", argv[i]);
 		i++;

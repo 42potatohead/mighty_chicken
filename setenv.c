@@ -6,14 +6,11 @@
 /*   By: ataan <ataan@student.42amman.com>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 15:04:18 by ataan             #+#    #+#             */
-/*   Updated: 2025/06/13 20:23:22 by ataan            ###   ########.fr       */
+/*   Updated: 2025/08/01 23:25:28 by ataan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "chicken.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 static char	*join_key_value(const char *key, const char *value)
 {
@@ -78,7 +75,10 @@ static int	append_new_var(char *new_var, int i, char ***envp)
 	return (0);
 }
 
-// free(new_var); -> //not needed we shall clean the whole enviroment when shell is closed
+/*
+	free(new_var); -> not needed  ...
+	we shall clean the whole enviroment when shell is closed
+*/
 int	set_env_var(char ***envp, const char *key, const char *value)
 {
 	int		i;
@@ -108,31 +108,9 @@ char	*get_env_var(char **envp, const char *key)
 	{
 		if (ft_strncmp(envp[i], key, key_len) == 0 && envp[i][key_len] == '=')
 		{
-			return (envp[i] + key_len + 1); // Return pointer to value
+			return (envp[i] + key_len + 1);
 		}
 		i++;
 	}
-	return (NULL); // Not found
-}
-
-char	*get_env_var2(char **envp, char *key)
-{
-	size_t	key_len;
-	int		i;
-
-	if (!envp || !key)
-		return (NULL);
-	key_len = strlen(key)-1;
-	if (*key == '$')
-		key++;
-	i = 0;
-	while (envp[i])
-	{
-		if (ft_strncmp(envp[i], key, key_len) == 0 && envp[i][key_len] == '=')
-		{
-			return (envp[i] + key_len + 1); // Return pointer to value
-		}
-		i++;
-	}
-	return (NULL); // Not found
+	return (NULL);
 }

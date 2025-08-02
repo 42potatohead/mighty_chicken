@@ -6,7 +6,7 @@
 /*   By: ataan <ataan@student.42amman.com>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 15:04:14 by ataan             #+#    #+#             */
-/*   Updated: 2025/06/13 20:20:46 by ataan            ###   ########.fr       */
+/*   Updated: 2025/08/01 23:20:34 by ataan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,12 +45,13 @@ static void	unset_var(char ***envp, const char *key)
 		if (ft_strncmp(env[i], key, len) == 0 && env[i][len] == '=')
 		{
 			i++;
-			continue;
+			continue ;
 		}
 		env[j++] = env[i++];
 	}
 	env[j] = NULL;
 }
+
 // add is option check
 int	chkn_unset(char ***envp, char **argv)
 {
@@ -68,29 +69,3 @@ int	chkn_unset(char ***envp, char **argv)
 	}
 	return (EXIT_SUCCESS);
 }
-// char **copy_env(char **envp) {
-//     int count = 0;
-//     while (envp[count]) count++;
-
-//     char **new_env = malloc(sizeof(char *) * (count + 1));
-//     if (!new_env) return (NULL);
-
-//     for (int i = 0; i < count; i++)
-//         new_env[i] = strdup(envp[i]);
-//     new_env[count] = NULL;
-//     return (new_env);
-// }
-
-// int main(int argc, char **argv, char **envp)
-// {
-// 	char **env;
-
-// 	env = copy_env(envp);
-// 	char *arg[] = {"aaa=99", "aaa=99", NULL};
-// 	chkn_export(&envp, arg);
-// 	chkn_prnt_envp(arg, envp);
-// 	arg[1] = "aaa";
-// 	chkn_unset(&envp, arg);
-// 	chkn_prnt_envp(arg, envp);
-// 	return (EXIT_SUCCESS);
-// }

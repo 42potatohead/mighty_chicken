@@ -6,7 +6,7 @@
 /*   By: ataan <ataan@student.42amman.com>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 17:09:05 by ataan             #+#    #+#             */
-/*   Updated: 2025/06/11 07:29:33 by ataan            ###   ########.fr       */
+/*   Updated: 2025/08/01 23:17:16 by ataan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,9 +22,10 @@ int	chkn_prnt_envp(char **argv, char **envp)
 	i = 0;
 	if (argv[i] != NULL)
 		i++;
-	if (i > 1) // make an invalid option err
+	if (i > 1)
 	{
-		ft_putstr_fd("chicken: env: env does not take arguments\n", STDERR_FILENO);
+		ft_putstr_fd("chicken: env: env does not take arguments\n",
+			STDERR_FILENO);
 		return (1);
 	}
 	i = 0;
