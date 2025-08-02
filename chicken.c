@@ -6,7 +6,7 @@
 /*   By: zabu-bak <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/20 13:59:48 by ataan             #+#    #+#             */
-/*   Updated: 2025/08/01 20:04:43 by zabu-bak         ###   ########.fr       */
+/*   Updated: 2025/08/02 18:00:38 by zabu-bak         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,24 +32,10 @@ void init_var(t_grand *grand)
     grand->qoutes = 0;
     grand->in_single = 0;
     grand->in_double = 0;
+    grand->astatrr = malloc(sizeof(t_ASTatrr) * 1);
 }
 
-void free_ast(t_ASTNode *node)
-{
-    if (!node)
-        return;
 
-    free_ast(node->left);
-    free_ast(node->right);
-
-    if (node->args)
-    {
-        for (int i = 0; node->args[i]; i++)
-            free(node->args[i]);
-        free(node->args);
-    }
-    free(node);
-}
 
 void free_tokens(t_Token *tokens, int count)
 {
@@ -57,14 +43,14 @@ void free_tokens(t_Token *tokens, int count)
         return;
 
     int i = 0;
-    while (i < count && tokens[i].type != TOKEN_END)
+    while (i < count && tokens[i].type != TK_END)
     {
         if (tokens[i].value)
             free(tokens[i].value);
         i++;
     }
-    // Free the TOKEN_END value if it exists
-    if (i < count && tokens[i].type == TOKEN_END && tokens[i].value)
+    // Free the TK_END value if it exists
+    if (i < count && tokens[i].type == TK_END && tokens[i].value)
         free(tokens[i].value);
 
     free(tokens);
@@ -81,70 +67,16 @@ void print_banner(void)
 
 }
 
-// if (node->type != NODE_BUILTIN)
-//         {
-//             char *cmdpath = ft_strjoin(getenv("PATH"), node->args[0]);
-//             if (execve(cmdpath, node->args, NULL) == -1)
-//             {
-//                 perror("execve");
-//                 exit(EXIT_FAILURE);
-//             }
-//         }
-
-
-
-// t_ASTNode *parse_expression(t_Token **tokens)
-// {
-//     t_ASTNode *left = malloc(sizeof(t_ASTNode));
-
-//     left = parse_command(tokens);
-//     char **args = malloc(sizeof(char *) * 1);
-//     args[0] = ft_strdup("|");
-
-//     while ((*tokens)->type == TOKEN_PIPE)
-//     {
-//         e_NodeType type;
-//         if ((*tokens)->type == TOKEN_PIPE)
-//             type = NODE_PIPE;
-//         (*tokens)++;
-//         t_ASTNode *right = parse_command(tokens);
-//         left = create_node(type ,args , left, right, 0);
-//     }
-//     return(left);
-// }
-
-// t_ASTNode *parse_type(t_Token **tokens)
-// {
-//     if ((*tokens)->type == TOKEN_COMMAND)
-//         return parse_command(tokens);
-//     else if ((*tokens)->type == TOKEN_PIPE)
-//     {
-//         (*tokens)++;
-//         return parse_expression(tokens);
-//     }
-//     else if((*tokens)->type == TOKEN_CD)
-//         chkn_cd((*tokens)->value, NULL); // Assuming you have a function to handle cd
-//     else if ((*tokens)->type == TOKEN_END)
-//     {
-//         return NULL; // End of input
-//     }
-//     else
-//     {
-//         printf("Unknown token type: %d\n", (*tokens)->type);
-//         exit(EXIT_FAILURE);
-//     }
-// }
-
 void sigint_handler(int sig)
 {
     if (sig == SIGINT)
     {
         g_received_signal = SIGINT;
         if (g_received_signal == SIGINT)
-        printf("\n"); // Move to a new line
-        rl_replace_line("", 0); // Clear the current input
-        rl_on_new_line(); // Tell readline to move to a new line
-        rl_redisplay(); // Redisplay the prompt
+        printf("\n");
+        rl_replace_line("", 0);
+        rl_on_new_line();
+        rl_redisplay();
     }
 }
 
@@ -174,10 +106,17 @@ void free_env(char **envp)
     free(envp);
 }
 
+void clean_exit(t_grand *grand, t_Token *tokens, t_ASTNode *ast)
+{
+    free_tokens(tokens, grand->chicken.token_count);
+    free_ast(ast);
+    close_redirection_fds();
+}
+
 int main(int argc, char **argv, char **envp)
 {
     t_grand grand;
-    t_Token *Tokens;
+    t_Token *tokens;
     t_ASTNode *ast;
 
     (void)argc;
@@ -185,58 +124,47 @@ int main(int argc, char **argv, char **envp)
     grand.env.envp = copy_env(envp);
     init_var(&grand);
     print_banner();
-     // Set up signal handlers
-    signal(SIGINT, sigint_handler); // Handle Ctrl-C
-    signal(SIGQUIT, SIG_IGN);       // Ignore Ctrl-
-    setenv("potato", "chicken", 0);
-    // int i = 0;
-    while (quacking) {
-        // Display prompt and get user input
+    signal(SIGINT, sigint_handler);
+    signal(SIGQUIT, SIG_IGN);
+    while (quacking)
+    {
         grand.chicken.input = readline("\001\033[1;36m\002quack> \001\033[0m\002 ");
-        // If user pressed Ctrl+D (EOF), exit the loop
         if (!grand.chicken.input)
             break;
         grand.token_counter = 0;
         if (g_received_signal == SIGINT)
         {
-            g_received_signal = 0; // Reset the signal
-            grand.chicken.status = 130; // Set status for Ctrl-C
-            // free(grand.chicken.input);
+            g_received_signal = 0;
+            grand.chicken.status = 130;
+            // clean
             // continue; // Skip to the next iteration
         }
         grand.chicken.token_count = 0;
         if (grand.chicken.input)
-            Tokens = lexer(grand.chicken.input, &grand);
-        ast = parse_expression(&Tokens, &grand);
-        // printf("%d", ast->type);
-        // print_ast(ast, 0);
-        // printf("left = %s right = %s\n", ast->left->args[0], ast->right->args[0]);
-        // execute commands and pipes turn it into where to send eg builtin commands etc
-        if (ast && (ast->type == NODE_COMMAND || ast->type == NODE_PIPE || ast->type == NODE_BUILTIN) && grand.chicken.status != 13)
+            tokens = lexer(grand.chicken.input, &grand);
+        ast = parse_expression(&tokens, &grand);
+        if (ast /*&& grand.chicken.status != 13*/)
         {
             execute(ast, &grand);
         }
         ft_printf("errno %d\n", grand.chicken.status);
-
-
-        // Add input to history (optional)
-        if (*grand.chicken.input)  // Avoid adding empty lines
+        if (*grand.chicken.input)
             add_history(grand.chicken.input);
 
         // Free the allocated memory
         // if (i == 1)
-        //     free_tokens(Tokens, grand.chicken.token_count);
+        //     free_tokens(tokens, grand.chicken.token_count);
         // i++;
         // if(ast)
         //     free_ast(ast);
-        // if (Tokens)
-        //     free_tokens(Tokens, grand.chicken.token_count);
+        // if (tokens)
+            free_tokens(tokens, grand.chicken.token_count);
         dup2(grand.saved_stdin, 0);
         dup2(grand.saved_stdout, 1);
         free(grand.chicken.input);
     }
-
-    printf("Exiting mighty_chicken...\n");
     free_env(grand.env.envp);
     return (0);
 }
+
+

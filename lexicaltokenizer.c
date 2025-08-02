@@ -78,17 +78,17 @@ int catagory(char *value,t_grand *grand)
 {
     printf("token_counter %d\n", grand->token_counter);
     if (is_builtin(value) == EXIT_SUCCESS && grand->token_counter == 1)
-        return (TOKEN_BUILTIN);
+        return (TK_BLTN);
     else if (!ft_strncmp(value, "|", 1))
-        return (TOKEN_PIPE);
+        return (TK_PIPE);
     else if (!ft_strncmp(value, ">", 1))
-        return (TOKEN_REDIRECT_OUT);
+        return (TK_R_OUT);
     else if (!ft_strncmp(value, "<", 1))
-        return (TOKEN_REDIRECT_IN);
+        return (TK_R_IN);
     else if (!ft_strncmp(value, ">>", 2))
-        return (TOKEN_APPENOUT);
+        return (TK_AOUT);
     else
-        return (TOKEN_COMMAND);
+        return (TK_CMD);
 }
 
 /*
@@ -99,7 +99,7 @@ int catagory(char *value,t_grand *grand)
         and is determined by category() based on token.value
 
 */
-t_Token create_token(e_TokenType type, char *value, int len, t_grand *grand)
+t_Token create_token(t_TokenType type, char *value, int len, t_grand *grand)
 {
     t_Token token;
     char *temp;
@@ -128,35 +128,35 @@ int lex_expression(t_Token *tokens, t_grand *grand, char **input)
 {
     if(**input == '|')
     {
-        tokens[grand->chicken.token_count++] = create_token(TOKEN_PIPE, "|", 1, grand);
+        tokens[grand->chicken.token_count++] = create_token(TK_PIPE, "|", 1, grand);
         (*input)++;
         grand->token_counter = 0;
         return (1);
     }
     else if(**input == '>' && *(*input + 1) == '>')
     {
-        tokens[grand->chicken.token_count++] = create_token(TOKEN_APPENOUT, ">>", 2, grand);
+        tokens[grand->chicken.token_count++] = create_token(TK_AOUT, ">>", 2, grand);
         (*input) += 2; // Skip the second '>'
         grand->token_counter = 0;
         return (1);
     }
     else if (**input == '<' && *(*input + 1) == '<')
     {
-        tokens[grand->chicken.token_count++] = create_token(TOKEN_HEREDOC, "<<", 2, grand);
+        tokens[grand->chicken.token_count++] = create_token(TK_R_DILM, "<<", 2, grand);
         (*input) += 2; // Skip the second '<'
         grand->token_counter = 0;
         return (1);
     }
     else if(**input == '>')
     {
-        tokens[grand->chicken.token_count++] = create_token(TOKEN_REDIRECT_OUT, ">", 1, grand);
+        tokens[grand->chicken.token_count++] = create_token(TK_R_OUT, ">", 1, grand);
         (*input)++;
         grand->token_counter = 0;
         return (1);
     }
     else if(**input == '<')
     {
-        tokens[grand->chicken.token_count++] = create_token(TOKEN_REDIRECT_IN, "<", 1, grand);
+        tokens[grand->chicken.token_count++] = create_token(TK_R_IN, "<", 1, grand);
         (*input)++;
         grand->token_counter = -1;
         return (1);
@@ -193,11 +193,11 @@ void verify_token(t_grand *grand, t_Token *tokens, char *start, char *input)
     free(temp);
     temp = expand_variables(ft_substr(start, 0 , input - start), grand);
     if(temp && (ft_strlen(temp) == 0 && flag != 1) || ft_strlen(temp) > 0)
-        tokens[grand->chicken.token_count++] = create_token(TOKEN_COMMAND, start, input - start, grand);
+        tokens[grand->chicken.token_count++] = create_token(TK_CMD, start, input - start, grand);
 
 }
 /*
-    lexer, it converts text into meaningful lexical tokens, defined by the Token enum struct
+    lexer, it converts text into meaningful lexical tokens, defined by the token enum struct
 */
 t_Token *lexer(char *input, t_grand *grand)
 {
@@ -226,7 +226,7 @@ t_Token *lexer(char *input, t_grand *grand)
             verify_token(grand, tokens, start, input);
         }
     }
-    tokens[grand->chicken.token_count++] = (t_Token){TOKEN_END, NULL};
+    tokens[grand->chicken.token_count++] = (t_Token){TK_END, NULL};
     return (tokens);
 }
 
@@ -250,7 +250,7 @@ t_Token *lexer(char *input, t_grand *grand)
 //             tokens[grand->chicken.token_count++] = (t_Token){TOKEN_REDIRECT_IN, ft_strdup("<")};
 //         else if(input[i] == '>' && input[i + 1] == '>')
 //         {
-//             tokens[grand->chicken.token_count++] = (t_Token){TOKEN_APPENOUT, ft_strdup(">>")};
+//             tokens[grand->chicken.token_count++] = (t_Token){TK_AOUT, ft_strdup(">>")};
 //             i++; // Skip the second '>'
 //         }
 //         else if(input[i] == '-') // cmd options

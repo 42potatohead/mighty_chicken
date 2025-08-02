@@ -76,7 +76,7 @@ int handle_redirect(t_Token *tokens, t_grand *grand)
 	}
 	if (!ft_strncmp(tokens->value, ">", 1) || !ft_strncmp(tokens->value, ">>", 2))
 	{
-		if (ft_strncmp(tokens->value, ">>", 2))
+		if (!ft_strncmp(tokens->value, ">>", 2))
 			append_flag = 1;
 		else
 			append_flag = 0;

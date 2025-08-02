@@ -67,6 +67,7 @@ void execute_command(t_ASTNode *node, t_grand *grand)
         else if (WIFSIGNALED(grand->chicken.status))
             grand->chicken.status = 128 + WTERMSIG(grand->chicken.status);
         // grand->chicken.status = WEXITSTATUS(grand->chicken.status);
+        printf("Command executed with status: %d\n", grand->chicken.status);
         signal(SIGINT, sigint_handler);
     }
 }
