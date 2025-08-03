@@ -29,7 +29,7 @@ static int	is_option(char *s)
 	if u do pwd xxx in bash cwd is printed without err */
 int	chkn_pwd(char **argv, char **envp)
 {
-	int		i;
+	int	i;
 
 	if (argv == NULL)
 		return (1);

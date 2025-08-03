@@ -1,13 +1,15 @@
 CC = cc
 RM = rm -rf
-CFLAGS = -g3
+CFLAGS = -Wall -Wextra -Werror -g3
 LIB = -L./libft -lft -lreadline
 
 SRC = chicken.c \
 	  lexicaltokenizer.c \
 	  parser.c \
 	  setenv.c \
-	  cd.c echo.c env.c exit.c export.c pwd.c unset.c chkn_execute.c get_path.c redirect.c expand.c command_parse_logic.c clean.c
+	  cd.c echo.c env.c exit.c export.c pwd.c unset.c chkn_execute.c get_path.c redirect.c \
+	  expand.c command_parse_logic.c lex_expression.c count_tokens.c catagorize.c clean.c init.c \
+	  execute_utis.c
 
 OBJ = $(SRC:.c=.o)
 

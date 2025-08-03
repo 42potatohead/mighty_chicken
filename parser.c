@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zabu-bak <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: ataan <ataan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/02 13:06:23 by zabu-bak          #+#    #+#             */
-/*   Updated: 2025/08/02 18:22:45 by zabu-bak         ###   ########.fr       */
+/*   Updated: 2025/08/03 21:26:38 by ataan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,6 @@ int	parse_in(t_Token **tokens, t_grand *grand)
 	int	std_in;
 	int	std_out;
 
-	printf("end\n");
 	std_in = 0;
 	if ((*tokens)->type == TK_R_IN)
 	{
@@ -42,7 +41,6 @@ int	parse_in(t_Token **tokens, t_grand *grand)
 		if (std_in == -1)
 			return (-1);
 		(*tokens) += 2;
-		printf("we are on token %s\n", (*tokens)->value);
 		return (std_in);
 	}
 	std_out = 1;
@@ -88,7 +86,6 @@ void	fill_pipe(t_Token **tokens, t_ASTNode *right, t_grand *grand)
 t_ASTNode	*parse_expression(t_Token **tokens, t_grand *grand)
 {
 	t_ASTNode	*left;
-	char		**args;
 	t_NodeType	type;
 	t_ASTNode	*right;
 
@@ -96,7 +93,7 @@ t_ASTNode	*parse_expression(t_Token **tokens, t_grand *grand)
 		return (NULL);
 	left = NULL;
 	if ((*tokens)->type == TK_CMD || (*tokens)->type == TK_BLTN
-	|| (*tokens)->type == TK_R_IN || (*tokens)->type == TK_R_OUT)
+		|| (*tokens)->type == TK_R_IN || (*tokens)->type == TK_R_OUT)
 		left = parse_command(tokens, grand);
 	if ((*tokens)->type == TK_END)
 		return (left);

@@ -3,33 +3,33 @@
 /*                                                        :::      ::::::::   */
 /*   cd.c                                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ataan <ataan@student.42amman.com>          +#+  +:+       +#+        */
+/*   By: ataan <ataan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 17:09:43 by ataan             #+#    #+#             */
-/*   Updated: 2025/08/01 19:26:00 by ataan            ###   ########.fr       */
+/*   Updated: 2025/08/03 21:32:55 by ataan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "chicken.h"
 
 /*
-    Use chdir(path).
-    Handle errors (e.g., invalid path).
-    Update $PWD.
+	Use chdir(path).
+	Handle errors (e.g., invalid path).
+	Update $PWD.
 
-    tests:
-    - cd (with $HOME variable set correctly)
-    - cd (with $HOME variable = "") -> do nothing
-    - cd .
-    - cd ..
-    - cd ./
-    - cd ../
-    - cd existing directory
-    - cd non existing directory "bash: cd: ataan: No such file or directory"
-    - cd directory with no read permission -> successfully change directory
-    - cd filename
-    - cd dir1 dir2 "bash: cd: too many arguments"
-    - cd /home
+	tests:
+	- cd (with $HOME variable set correctly)
+	- cd (with $HOME variable = "") -> do nothing
+	- cd .
+	- cd ..
+	- cd ./
+	- cd ../
+	- cd existing directory
+	- cd non existing directory "bash: cd: ataan: No such file or directory"
+	- cd directory with no read permission -> successfully change directory
+	- cd filename
+	- cd dir1 dir2 "bash: cd: too many arguments"
+	- cd /home
 */
 
 int	count_arg(char **argv)
@@ -89,11 +89,11 @@ static char	*cd_old_dir(char **envp)
 }
 
 /*
-    1. count args
-    2. save old_dir
-    3. find new_dir
-    4. change dir
-    5. update PWD and OLDPWD
+	1. count args
+	2. save old_dir
+	3. find new_dir
+	4. change dir
+	5. update PWD and OLDPWD
 */
 int	chkn_cd(char **argv, char ***envp)
 {
@@ -122,26 +122,3 @@ int	chkn_cd(char **argv, char ***envp)
 	free(new_pwd);
 	return (ret);
 }
-
-// char **copy_env(char **envp) {
-//     int count = 0;
-//     while (envp[count]) count++;
-
-//     char **new_env = malloc(sizeof(char *) * (count + 1));
-//     if (!new_env) return (NULL);
-
-//     for (int i = 0; i < count; i++)
-//         new_env[i] = strdup(envp[i]);
-//     new_env[count] = NULL;
-//     return (new_env);
-// }
-
-// int main(int argc, char **argv, char **envp)
-// {
-// 	char **env;
-
-// 	env = copy_env(envp);
-// 	chkn_cd(argv, &env);
-// 	chkn_prnt_envp(argv, env);
-// 	// free(env);
-// }

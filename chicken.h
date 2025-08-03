@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   chicken.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zabu-bak <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: ataan <ataan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/20 14:02:19 by ataan             #+#    #+#             */
-/*   Updated: 2025/08/02 18:05:55 by zabu-bak         ###   ########.fr       */
+/*   Updated: 2025/08/03 21:30:18 by ataan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,13 @@
 # include <string.h>
 # include <sys/wait.h>
 
+extern volatile sig_atomic_t	g_received_signal;
+
+# define COLOR_CYAN "\001\033[1;36m\002"
+# define COLOR_RESET "\001\033[0m\002"
+
+# define QUACKING 1
+
 // token types
 typedef enum e_TokenType
 {
@@ -36,14 +43,14 @@ typedef enum e_TokenType
 	TK_AOUT,
 	TK_R_DILM,
 	TK_END
-}						t_TokenType;
+}								t_TokenType;
 
 // token structure
 typedef struct s_Token
 {
-	t_TokenType			type;
-	char				*value;
-}						t_Token;
+	t_TokenType					type;
+	char						*value;
+}								t_Token;
 
 // AST node types
 typedef enum t_NodeType
@@ -53,97 +60,118 @@ typedef enum t_NodeType
 	NODE_PIPE,
 	NODE_REDIRECT_OUT,
 	NODE_REDIRECT_IN,
-}						t_NodeType;
+}								t_NodeType;
 
 typedef struct s_ASTatrr
 {
-	t_NodeType			type;
-	char				**args;
-	int					last_cmd;
-	struct s_ASTNode	*left;
-	struct s_ASTNode	*right;
-	int					std_in;
-	int					std_out;
-}						t_ASTatrr;
+	t_NodeType					type;
+	char						**args;
+	int							last_cmd;
+	struct s_ASTNode			*left;
+	struct s_ASTNode			*right;
+	int							std_in;
+	int							std_out;
+}								t_ASTatrr;
 
 // AST node structure
 typedef struct s_ASTNode
 {
-	t_NodeType			type;
-	char				**args;
-	int					last_cmd;
-	struct s_ASTNode	*left;
-	struct s_ASTNode	*right;
-	int					std_in;
-	int					std_out;
-}						t_ASTNode;
+	t_NodeType					type;
+	char						**args;
+	int							last_cmd;
+	struct s_ASTNode			*left;
+	struct s_ASTNode			*right;
+	int							std_in;
+	int							std_out;
+}								t_ASTNode;
 
 typedef struct s_chicken
 {
-	int					token_count;
-	char				*input;
-	char				*builtins[8];
-	char				**tokens;
-	int					status;
-}						t_chicken;
+	int							token_count;
+	char						*input;
+	char						*builtins[8];
+	char						**tokens;
+	int							status;
+}								t_chicken;
 
 typedef struct s_env
 {
-	char				**envp;
-	char				**split_path;
-	char				*full_path;
-}						t_env;
+	char						**envp;
+	char						**split_path;
+	char						*full_path;
+}								t_env;
 
 typedef struct s_grand
 {
-	t_chicken			chicken;
+	t_chicken					chicken;
 	// t_Token				token;
-	t_env				env;
-	t_ASTatrr			*astatrr;
-	char				*in_file;
-	char				*out_file;
-	int					saved_stdin;
-	int					saved_stdout;
-	int					qoutes;
-	int					in_single;
-	int					in_double;
-	int					token_counter;
-	int					pflag;
-}						t_grand;
+	t_env						env;
+	t_ASTatrr					*astatrr;
+	char						*in_file;
+	char						*out_file;
+	int							saved_stdin;
+	int							saved_stdout;
+	int							qoutes;
+	int							in_single;
+	int							in_double;
+	int							token_counter;
+	int							pflag;
+}								t_grand;
 
-t_Token					*lexer(char *input, t_grand *grand);
-t_ASTNode				*parse_expression(t_Token **tokens, t_grand *grand);
-t_ASTNode				*parse_command(t_Token **tokens, t_grand *grand);
-t_ASTNode				*create_node(t_grand *grand, t_ASTNode *left,
-							t_ASTNode *right);
-void					execute(t_ASTNode *node, t_grand *grand);
-void					execute_command(t_ASTNode *node, t_grand *grand);
-void					call_builtin(t_ASTNode *node, t_grand *grand);
-void					close_wait(int fd[2], t_grand *grand);
-void					get_path(t_grand *grand, char *cmd);
-int						chkn_cd(char **argv, char ***envp);
-char					*get_env_var(char **envp, const char *key);
-int						set_env_var(char ***envp, const char *key,
-							const char *value);
-int						chkn_unset(char ***envp, char **argv);
-int						chkn_export(char ***envp, char **argv);
-int						chkn_exit(char **argv);
-int						chkn_pwd(char **argv, char **envp);
-int						chkn_echo(char **argv);
-int						chkn_prnt_envp(char **argv, char **envp);
-void					sigint_handler(int sig);
+t_Token							*lexer(char *input, t_grand *grand);
+t_ASTNode						*parse_expression(t_Token **tokens,
+									t_grand *grand);
+t_ASTNode						*parse_command(t_Token **tokens,
+									t_grand *grand);
+t_ASTNode						*create_node(t_grand *grand, t_ASTNode *left,
+									t_ASTNode *right);
+void							should_redirect(t_ASTNode *node);
+void							execute(t_ASTNode *node, t_grand *grand);
+void							execute_command(t_ASTNode *node,
+									t_grand *grand);
+void							call_builtin(t_ASTNode *node, t_grand *grand);
+void							get_path(t_grand *grand, char *cmd);
+int								chkn_cd(char **argv, char ***envp);
+char							*get_env_var(char **envp, const char *key);
+int								set_env_var(char ***envp, const char *key,
+									const char *value);
+int								chkn_unset(char ***envp, char **argv);
+int								chkn_export(char ***envp, char **argv);
+int								chkn_exit(char **argv);
+int								chkn_pwd(char **argv, char **envp);
+int								chkn_echo(char **argv);
+int								chkn_prnt_envp(char **argv, char **envp);
+void							sigint_handler(int sig);
 
-//redirect
-int						handle_redirect(t_Token *tokens, t_grand *grand);
-int						redirect_out(char *file, t_grand *grand,
-							int append_flag);
-int						redirect_in(char *file, t_grand *grand);
-char					*get_env_var2(char **envp, char *key);
-int						parse_in(t_Token **tokens, t_grand *grand);
+// redirect
+int								handle_redirect(t_Token *tokens,
+									t_grand *grand);
+int								redirect_out(char *file, t_grand *grand,
+									int append_flag);
+int								redirect_in(char *file, t_grand *grand);
+char							*get_env_var2(char **envp, char *key);
+int								parse_in(t_Token **tokens, t_grand *grand);
 
-int						quotes(char **input, int *space, t_grand *grand);
-char					*expand_variables(char *value, t_grand *grand);
-void clean_exit(t_grand *grand, t_Token *tokens, t_ASTNode *ast);
-void close_redirection_fds(void);
+int								quotes(char **input, int *space,
+									t_grand *grand);
+char							*expand_variables(char *value, t_grand *grand);
+void							clean_exit(t_grand *grand, t_Token *tokens,
+									t_ASTNode *ast);
+void							close_redirection_fds(void);
+int								lex_expression(t_Token *tokens, t_grand *grand,
+									char **input);
+t_Token							create_token(t_TokenType type, char *value,
+									int len, t_grand *grand);
+int								ft_isspace(int c);
+int								count_tokens(char *input);
+int								catagory(char *value, t_grand *grand);
+int								is_builtin(char *value);
+void							free_env(char **envp);
+void							sigint_handler(int sig);
+void							init_var(t_grand *grand);
+void							close_wait(int fd[2], t_grand *grand,
+									pid_t last_pid);
+void							wait_child(t_grand *grand);
+void							bath_time(t_grand *grand);
 
 #endif

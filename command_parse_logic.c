@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   command_parse_logic.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zabu-bak <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: ataan <ataan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/02 16:21:39 by zabu-bak          #+#    #+#             */
-/*   Updated: 2025/08/02 16:22:50 by zabu-bak         ###   ########.fr       */
+/*   Updated: 2025/08/03 21:25:11 by ataan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,6 @@ void	handle_pre_command_redirects(t_Token **tokens, t_grand *grand)
 	}
 	if ((*tokens)->type == TK_R_IN)
 		grand->astatrr->std_in = parse_in(tokens, grand);
-	printf("STD IN = %d\n", grand->astatrr->std_in);
 }
 
 int	parse_command_arguments(t_Token **tokens, t_grand *grand)
@@ -41,9 +40,7 @@ int	parse_command_arguments(t_Token **tokens, t_grand *grand)
 	flag = 0;
 	while ((*tokens)->type == TK_CMD || (*tokens)->type == TK_BLTN)
 	{
-		printf("testing : %s\n", (*tokens)->value);
 		grand->astatrr->args[arg_count++] = ft_strdup((*tokens)->value);
-		printf("token type %d\n", (*tokens)->type);
 		if ((*tokens)->type == TK_CMD)
 			grand->astatrr->type = NODE_COMMAND;
 		if ((*tokens)->type == TK_BLTN)
@@ -54,7 +51,6 @@ int	parse_command_arguments(t_Token **tokens, t_grand *grand)
 		(*tokens)++;
 		if ((*tokens)->type == TK_END)
 			grand->astatrr->last_cmd = 1;
-		printf("node type %d\n", grand->astatrr->type);
 	}
 	grand->astatrr->args[arg_count] = NULL;
 	return (flag);

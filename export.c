@@ -13,14 +13,14 @@
 #include "chicken.h"
 
 /*
-    We need to handle these cases:
-        - export VAR=value → Set and export a variable.
-        - export VAR → Mark an existing variable as exported.
-        - export (no arguments) → Print all exported environment variables.
+	We need to handle these cases:
+		- export VAR=value → Set and export a variable.
+		- export VAR → Mark an existing variable as exported.
+		- export (no arguments) → Print all exported environment variables.
 */
 
 /*
-    prints envp for export function (with declare -x)
+	prints envp for export function (with declare -x)
 */
 static int	prnt_envp(char **envp)
 {
@@ -77,18 +77,18 @@ static int	is_option(char *s)
 }
 
 /*
-    expects argv input where argv[0] is the command name,
+	expects argv input where argv[0] is the command name,
 	argv[1...] is command argument
-    envp can be a copy of extern char **environ,
+	envp can be a copy of extern char **environ,
 	or **envp from the main function or a local copy ...
 
-    TODO: export VAR1=V1 VAR2=V2 VAR3=V3 ... DONE :)
-    // Case 1: No arguments → Print all environment variables
+	TODO: export VAR1=V1 VAR2=V2 VAR3=V3 ... DONE :)
+	// Case 1: No arguments → Print all environment variables
 
 	// Case 2: handle export VAR without updating its value
 	// TODO:: check if var has a session value,
 	might be out of scope
-    // Case 3: Set an environment variable (format: VAR=value)
+	// Case 3: Set an environment variable (format: VAR=value)
  */
 int	chkn_export(char ***envp, char **argv)
 {

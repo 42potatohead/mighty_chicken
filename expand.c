@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expand.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zabu-bak <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: ataan <ataan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/27 12:57:43 by ataan             #+#    #+#             */
-/*   Updated: 2025/08/02 14:43:25 by zabu-bak         ###   ########.fr       */
+/*   Updated: 2025/08/03 21:20:27 by ataan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ static void	append_env_value(char **result, char *var_name, t_grand *grand)
 	*result = new_result;
 }
 
-static void	append_status(char **result, char *status, t_grand *grand)
+static void	append_status(char **result, char *status)
 {
 	char	*new_result;
 
@@ -54,13 +54,12 @@ static void	handle_dollar(char **result, char **value_ptr, t_grand *grand)
 	char	*start;
 	char	*var_name;
 	char	*status;
-	char	*new_result;
 
 	value = *value_ptr + 1;
 	if (*value == '?')
 	{
 		status = ft_itoa(grand->chicken.status);
-		append_status(result, status, grand);
+		append_status(result, status);
 		*value_ptr = value + 1;
 		return ;
 	}

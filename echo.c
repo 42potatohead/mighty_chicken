@@ -3,29 +3,36 @@
 /*                                                        :::      ::::::::   */
 /*   echo.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ataan <ataan@student.42amman.com>          +#+  +:+       +#+        */
+/*   By: ataan <ataan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 17:09:22 by ataan             #+#    #+#             */
-/*   Updated: 2025/08/01 23:19:06 by ataan            ###   ########.fr       */
+/*   Updated: 2025/08/03 19:47:30 by ataan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "chicken.h"
 
 /*
-    Prints text to the terminal.
-    -n suppresses the newline at the end.
+	Prints text to the terminal.
+	-n suppresses the newline at the end.
 
-    Check if the first argument is -n.
-    Print the remaining arguments accordingly.
+	Check if the first argument is -n.
+	Print the remaining arguments accordingly.
 
-    Tests:
-    - echo
-    - echo hi
-    - echo -n
-    - echo -n hello
-    - echo multiple arguments
-    - echo -n multiple arguments
+	Tests:
+	- echo
+	- echo hi
+	- echo -n
+	- echo -n hello
+	- echo multiple arguments
+	- echo -n multiple arguments
+	
+	i = 0;
+	while (argv[i])
+	{
+		printf("WOOOOOOOO %s\n", argv[i]);
+		i++;
+	}
 */
 
 int	chkn_echo(char **argv)
@@ -33,12 +40,6 @@ int	chkn_echo(char **argv)
 	int	i;
 	int	err;
 
-	i = 0;
-	while (argv[i])
-	{
-		printf("WOOOOOOOO %s\n", argv[i]);
-		i++;
-	}
 	err = 0;
 	if (!argv[1])
 		err = printf("\n");

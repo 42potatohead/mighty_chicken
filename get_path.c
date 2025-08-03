@@ -12,7 +12,7 @@
 
 #include "chicken.h"
 
-int is_relative(char *cmd, t_grand *grand)
+int	is_relative(char *cmd, t_grand *grand)
 {
 	if (ft_strncmp(cmd, "/", 1) == 0 || ft_strncmp(cmd, "./", 2) == 0
 		|| ft_strncmp(cmd, "../", 3) == 0)

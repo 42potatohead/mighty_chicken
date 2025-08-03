@@ -13,20 +13,20 @@
 #include "chicken.h"
 
 /*
-    If no options are supplied,
-    each name refers to a variable; if there is no variable by that name,
+	If no options are supplied,
+	each name refers to a variable; if there is no variable by that name,
 	a function with that name, if any, is unset.
 
-    Readonly variables and functions may not be unset.
-    Some shell variables lose their special behavior if they are unset;
-    such behavior is noted in the description of the individual variables.
-    The return status is zero unless a name is readonly or may not be unset.
+	Readonly variables and functions may not be unset.
+	Some shell variables lose their special behavior if they are unset;
+	such behavior is noted in the description of the individual variables.
+	The return status is zero unless a name is readonly or may not be unset.
 
-    tests:
-    - unset
-    - unset non existing variable
-    - unset multiple variables
-    - unset VAR
+	tests:
+	- unset
+	- unset non existing variable
+	- unset multiple variables
+	- unset VAR
 */
 
 static void	unset_var(char ***envp, const char *key)

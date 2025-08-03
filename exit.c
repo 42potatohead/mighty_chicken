@@ -11,14 +11,14 @@
 /* ************************************************************************** */
 
 /*
-    Things to consider later:
-     - free memory before exit
-     - signal handling
-     - sharing the static functions outside this file
+	Things to consider later:
+		- free memory before exit
+		- signal handling
+		- sharing the static functions outside this file
 
 	- Error messages typically go to stderr.
 		consider replacing the ft_printf statements
-    - When too many args: print error, set exit code to 1,
+	- When too many args: print error, set exit code to 1,
 		AND exit
 */
 
@@ -59,10 +59,10 @@ static int	within_bound(const char *s, int neg)
 	return (EXIT_FAILURE);
 }
 
-//check empty
-//check length <= 19
-//check digit only
-//check within bounds
+// check empty
+// check length <= 19
+// check digit only
+// check within bounds
 int	is_valid_long_long(const char *s)
 {
 	int	neg;

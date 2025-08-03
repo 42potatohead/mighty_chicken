@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   setenv.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ataan <ataan@student.42amman.com>          +#+  +:+       +#+        */
+/*   By: ataan <ataan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 15:04:18 by ataan             #+#    #+#             */
-/*   Updated: 2025/08/01 23:25:28 by ataan            ###   ########.fr       */
+/*   Updated: 2025/08/03 21:33:27 by ataan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ static int	replace_existing_var(char ***envp, const char *key, char *new_var)
 	size_t	key_len;
 	char	**env;
 
-	key_len = strlen(key);
+	key_len = ft_strlen(key);
 	env = *envp;
 	i = 0;
 	while (env[i])
@@ -70,7 +70,6 @@ static int	append_new_var(char *new_var, int i, char ***envp)
 	}
 	new_env[i] = new_var;
 	new_env[i + 1] = NULL;
-	// free(env); // Free old array (strings are preserved unless replaced)
 	*envp = new_env;
 	return (0);
 }
@@ -102,7 +101,7 @@ char	*get_env_var(char **envp, const char *key)
 
 	if (!envp || !key)
 		return (NULL);
-	key_len = strlen(key);
+	key_len = ft_strlen(key);
 	i = 0;
 	while (envp[i])
 	{
