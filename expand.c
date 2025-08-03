@@ -6,7 +6,7 @@
 /*   By: ataan <ataan@student.42amman.com>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/27 12:57:43 by ataan             #+#    #+#             */
-/*   Updated: 2025/08/02 00:10:14 by ataan            ###   ########.fr       */
+/*   Updated: 2025/08/03 00:49:56 by ataan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,9 +18,20 @@ static void	append_env_value(char **result, char *var_name, t_grand *grand)
 	char	*new_result;
 
 	var_value = get_env_var(grand->env.envp, var_name);
+	free(var_name);
 	if (!var_value)
 		var_value = "";
 	new_result = ft_strjoin(*result, var_value);
+	free(*result);
+	*result = new_result;
+}
+
+static void	append_status(char **result, char *status, t_grand *grand)
+{
+	char	*new_result;
+
+	new_result = ft_strjoin(*result, status);
+	free(status);
 	free(*result);
 	*result = new_result;
 }
@@ -43,13 +54,13 @@ static void	handle_dollar(char **result, char **value_ptr, t_grand *grand)
 	char	*start;
 	char	*var_name;
 	char	*status;
+	char	*new_result;
 
 	value = *value_ptr + 1;
 	if (*value == '?')
 	{
 		status = ft_itoa(grand->chicken.status);
-		*result = ft_strjoin(*result, status);
-		free(status);
+		append_status(result, status, grand);
 		*value_ptr = value + 1;
 		return ;
 	}
@@ -60,7 +71,6 @@ static void	handle_dollar(char **result, char **value_ptr, t_grand *grand)
 	{
 		var_name = ft_substr(start, 0, value - start);
 		append_env_value(result, var_name, grand);
-		free(var_name);
 	}
 	else
 		append_char(result, '$');
