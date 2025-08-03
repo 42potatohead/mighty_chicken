@@ -182,6 +182,17 @@ void interpret(t_grand *grand)
     }
 }
 
+void run_lexer(t_grand *grand, t_Token **tokens, t_Token **original_tokens)
+{
+    grand->token_counter = 0;
+    grand->chicken.token_count = 0;
+    if (grand->chicken.input)
+    {
+        *tokens = lexer(grand->chicken.input, grand);
+        *original_tokens = *tokens;
+    }
+}
+
 void cracking_the_egg(int argc, char **argv, char **envp, t_grand *grand)
 {
     (void)argc;
@@ -207,23 +218,19 @@ int main(int argc, char **argv, char **envp)
         if (!grand.chicken.input)
             break;
         interpret(&grand);
-        grand.token_counter = 0;
-        grand.chicken.token_count = 0;
-        if (grand.chicken.input)
-        {
-            tokens = lexer(grand.chicken.input, &grand);
-            original_tokens = tokens;
-        }
+        run_lexer(&grand, &tokens, &original_tokens);
         ast = parse_expression(&tokens, &grand);
         if (ast)
             execute(ast, &grand);
         else
-            break ; // also clean
+            break ;
         ft_printf("errno %d\n", grand.chicken.status);
         if (*grand.chicken.input)
             add_history(grand.chicken.input);
         clean_exit(&grand, original_tokens, ast);
     }
+    if(grand.chicken.input)
+        clean_exit(&grand, original_tokens, ast);
 	free(grand.astatrr);
     free_env(grand.env.envp);
     return (0);

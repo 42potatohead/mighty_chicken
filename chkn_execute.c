@@ -14,22 +14,27 @@ void should_redirect(t_ASTNode *node)
 
 void call_builtin(t_ASTNode *node, t_grand *grand)
 {
+    int status;
+
+    status = 0;
     should_redirect(node);
      printf("Executing built-in command: %s\n", node->args[0]);
     if (!ft_strncmp(node->args[0], "cd", 2))
-        chkn_cd(node->args, &grand->env.envp);
+        status = chkn_cd(node->args, &grand->env.envp);
     else if (!ft_strncmp(node->args[0], "echo", 4))
-        chkn_echo(node->args);
+        status = chkn_echo(node->args);
     else if (!ft_strncmp(node->args[0], "env", 3))
-           chkn_prnt_envp(node->args, grand->env.envp);
+        status = chkn_prnt_envp(node->args, grand->env.envp);
     else if (!ft_strncmp(node->args[0], "exit", 4))
-        chkn_exit(node->args);
+        status = chkn_exit(node->args);
     else if (!ft_strncmp(node->args[0], "export", 6))
-        chkn_export(&grand->env.envp, node->args);
+        status = chkn_export(&grand->env.envp, node->args);
     else if (!ft_strncmp(node->args[0], "pwd", 3))
-        chkn_pwd(node->args, grand->env.envp);
+        status = chkn_pwd(node->args, grand->env.envp);
     else if (!ft_strncmp(node->args[0], "unset", 3))
-        chkn_unset(&grand->env.envp, node->args);
+        status = chkn_unset(&grand->env.envp, node->args);
+    if (node->last_cmd == 1)
+                grand->chicken.status = status;
 }
 // call cleanup if exec fails
 void execute_command(t_ASTNode *node, t_grand *grand)
@@ -40,7 +45,11 @@ void execute_command(t_ASTNode *node, t_grand *grand)
         printf("Executing command: %s %s\n", node->args[0], node->args[1] ? node->args[1] : "");
         // If not a built-in command, execute it as an external command
         if(node->type == NODE_BUILTIN)
+        {
             call_builtin(node, grand);
+            printf("Built-in command executed with status: %d\n", grand->chicken.status);
+            exit(grand->chicken.status);
+        }
         else if (fork() == 0)
         {
             printf("in %d out %d\n\n\n\n", node->std_in, node->std_out);
@@ -80,7 +89,9 @@ void close_wait(int fd[2], t_grand *grand)
     close(fd[1]);
     signal(SIGINT, SIG_IGN);
     wait(&grand->chicken.status);
+    printf("1status %d\n", WEXITSTATUS(grand->chicken.status));
     wait(&grand->chicken.status);
+    printf("2status %d\n", WEXITSTATUS(grand->chicken.status));
     dup2(grand->saved_stdin, STDIN_FILENO);
     dup2(grand->saved_stdout, STDOUT_FILENO);
     signal(SIGINT, sigint_handler);
