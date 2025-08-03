@@ -35,7 +35,6 @@ int redirect_out(char *file, t_grand *grand, int append_flag)
 		return (0);
 	}
 	return (fd);
-
 }
 
 int redirect_heredoc(char *delimiter, t_grand *grand)
@@ -72,6 +71,7 @@ int handle_redirect(t_Token *tokens, t_grand *grand)
 	{
 		tokens++;
 		fd = redirect_heredoc(tokens->value, grand);
+		grand->redirect_in_fd = fd;
 		return (fd);
 	}
 	if (!ft_strncmp(tokens->value, ">", 1) || !ft_strncmp(tokens->value, ">>", 2))
@@ -82,12 +82,14 @@ int handle_redirect(t_Token *tokens, t_grand *grand)
 			append_flag = 0;
 		tokens++;
 		fd = redirect_out(tokens->value, grand, append_flag);
+		grand->redirect_out_fd = fd;
 		return (fd);
 	}
 	if (!ft_strncmp(tokens->value, "<", 1))
 	{
 		tokens++;
 		fd = redirect_in(tokens->value, grand);
+		grand->redirect_in_fd = fd;
 		return (fd);
 	}
 	return (0);
