@@ -108,6 +108,7 @@ typedef struct s_grand
 	int					in_single;
 	int					in_double;
 	int					token_counter;
+	int					pflag;
 }						t_grand;
 
 t_Token					*lexer(char *input, t_grand *grand);

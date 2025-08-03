@@ -33,6 +33,7 @@ void init_var(t_grand *grand)
     grand->in_single = 0;
     grand->in_double = 0;
     grand->astatrr = malloc(sizeof(t_ASTatrr) * 1);
+    grand->pflag = 0;
 }
 
 // void    close_redirection_fds(void)
@@ -222,8 +223,6 @@ int main(int argc, char **argv, char **envp)
         ast = parse_expression(&tokens, &grand);
         if (ast)
             execute(ast, &grand);
-        else
-            break ;
         ft_printf("errno %d\n", grand.chicken.status);
         if (*grand.chicken.input)
             add_history(grand.chicken.input);

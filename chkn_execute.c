@@ -36,6 +36,25 @@ void call_builtin(t_ASTNode *node, t_grand *grand)
     if (node->last_cmd == 1)
                 grand->chicken.status = status;
 }
+
+void execute_blt(t_ASTNode *node, t_grand *grand)
+{
+    if (grand->pflag == 1)
+    {
+        {
+            call_builtin(node, grand);
+            printf("Built-in command executed with status: %d\n", grand->chicken.status);
+            exit(grand->chicken.status);
+        }
+    }
+    else
+    {
+        call_builtin(node, grand);
+        printf("Built-in command executed with status: %d\n", grand->chicken.status);
+        return ;
+    }
+}
+
 // call cleanup if exec fails
 void execute_command(t_ASTNode *node, t_grand *grand)
 {
@@ -43,15 +62,16 @@ void execute_command(t_ASTNode *node, t_grand *grand)
     {
 
         printf("Executing command: %s %s\n", node->args[0], node->args[1] ? node->args[1] : "");
-        // If not a built-in command, execute it as an external command
-        if(node->type == NODE_BUILTIN)
+        if (node->type == NODE_BUILTIN && grand->pflag == 0)
         {
             call_builtin(node, grand);
             printf("Built-in command executed with status: %d\n", grand->chicken.status);
-            exit(grand->chicken.status);
+            return ;
         }
-        else if (fork() == 0)
+        if (fork() == 0)
         {
+            if(node->type == NODE_BUILTIN)
+                execute_blt(node, grand);
             printf("in %d out %d\n\n\n\n", node->std_in, node->std_out);
             printf("this is %s\n", node->args[0]);
             should_redirect(node);
@@ -114,12 +134,14 @@ void fork_logic(t_ASTNode *node, t_grand *grand, int fd[2], int flag)
 
 void execute(t_ASTNode *node, t_grand *grand)
 {
+    int fd[2];
+
     if (!node)
-    	return;
+        return;
     execute_command(node, grand);
     if (node->type == NODE_PIPE)
     {
-        int fd[2];
+        grand->pflag = 1;
         pipe(fd);
         if (fork() == 0)
         {
