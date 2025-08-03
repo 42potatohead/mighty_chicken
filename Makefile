@@ -1,7 +1,7 @@
 CC = cc
 RM = rm -rf
-CFLAGS =
-LIB = -L./libft -lft -lreadline -g3
+CFLAGS = -g3
+LIB = -L./libft -lft -lreadline
 
 SRC = chicken.c \
 	  lexicaltokenizer.c \

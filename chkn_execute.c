@@ -57,7 +57,9 @@ void execute_command(t_ASTNode *node, t_grand *grand)
                 grand->chicken.status = errno;
             printf("last cmd %d\n", node->last_cmd);
             ft_printf("status %d\n", grand->chicken.status);
-            perror("execvp");
+            perror("");
+            free(grand->env.full_path);
+            close_redirection_fds();
             exit(grand->chicken.status);
         }
         signal(SIGINT, SIG_IGN);

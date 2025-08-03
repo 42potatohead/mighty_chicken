@@ -142,5 +142,7 @@ int						parse_in(t_Token **tokens, t_grand *grand);
 
 int						quotes(char **input, int *space, t_grand *grand);
 char					*expand_variables(char *value, t_grand *grand);
+void clean_exit(t_grand *grand, t_Token *tokens, t_ASTNode *ast);
+void close_redirection_fds(void);
 
 #endif

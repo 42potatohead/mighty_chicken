@@ -149,82 +149,80 @@ void free_env(char **envp)
     free(envp);
 }
 
-// void clean_exit(t_grand *grand, t_Token *tokens, t_ASTNode *ast)
-// {
-//     free_tokens(tokens, grand->chicken.token_count);
-//     free_ast(ast);
-//     // close_redirection_fds();
-// }
+void close_redirection_fds(void)
+{
+    int fd;
+
+    fd = 3;
+    while (fd < 1024) // Close all file descriptors from 3 to 1023
+    {
+        close(fd);
+        fd++;
+    }
+}
+
+void clean_exit(t_grand *grand, t_Token *tokens, t_ASTNode *ast)
+{
+    if (tokens)
+        free_tokens(tokens, grand->chicken.token_count);
+    if (ast)
+        free_ast(ast);
+    close_redirection_fds();
+    dup2(grand->saved_stdin, 0);
+    dup2(grand->saved_stdout, 1);
+    free(grand->chicken.input);
+}
+
+void interpret(t_grand *grand)
+{
+    if (g_received_signal == SIGINT)
+    {
+        g_received_signal = 0;
+        grand->chicken.status = 130;
+    }
+}
+
+void cracking_the_egg(int argc, char **argv, char **envp, t_grand *grand)
+{
+    (void)argc;
+    (void)argv;
+    grand->env.envp = copy_env(envp);
+    init_var(grand);
+    print_banner();
+    signal(SIGINT, sigint_handler);
+    signal(SIGQUIT, SIG_IGN);
+}
 
 int main(int argc, char **argv, char **envp)
 {
     t_grand grand;
     t_Token *tokens;
     t_ASTNode *ast;
-    t_Token *original_tokens; // Add this
+    t_Token *original_tokens;
 
-    (void)argc;
-    (void)argv;
-    grand.env.envp = copy_env(envp);
-    init_var(&grand);
-    print_banner();
-    signal(SIGINT, sigint_handler);
-    signal(SIGQUIT, SIG_IGN);
+    cracking_the_egg(argc, argv, envp, &grand);
     while (quacking)
     {
         grand.chicken.input = readline("\001\033[1;36m\002quack> \001\033[0m\002 ");
         if (!grand.chicken.input)
             break;
+        interpret(&grand);
         grand.token_counter = 0;
-        if (g_received_signal == SIGINT)
-        {
-            g_received_signal = 0;
-            grand.chicken.status = 130;
-            // clean
-            // continue; // Skip to the next iteration
-        }
         grand.chicken.token_count = 0;
         if (grand.chicken.input)
         {
             tokens = lexer(grand.chicken.input, &grand);
-            original_tokens = tokens; // Store original pointer
+            original_tokens = tokens;
         }
         ast = parse_expression(&tokens, &grand);
-        if (ast /*&& grand.chicken.status != 13*/)
-        {
+        if (ast)
             execute(ast, &grand);
-            while (ast)
-            {
-                if (ast->std_in > 2)
-                    close(ast->std_in);
-                printf("std_out %d\n", ast->std_out);
-                if (ast->std_out > 2)
-                    close(ast->std_out);
-                ast = ast->right;
-            }
-        }
+        else
+            break ; // also clean
         ft_printf("errno %d\n", grand.chicken.status);
         if (*grand.chicken.input)
             add_history(grand.chicken.input);
-
-        // Free the allocated memory
-        // if (i == 1)
-        //     free_tokens(tokens, grand.chicken.token_count);
-        // i++;
-        free_ast(ast);
-        if (tokens)
-            free_tokens(original_tokens, grand.chicken.token_count);
-        if (grand.saved_stdin > 2)
-            close(STDIN_FILENO);
-        if (grand.saved_stdout > 2)
-            close(STDOUT_FILENO);
-        close(grand.saved_stdout);
-
-
-        dup2(grand.saved_stdin, 0);
-        dup2(grand.saved_stdout, 1);
-        free(grand.chicken.input);
-        break;
+        clean_exit(&grand, original_tokens, ast);
     }
 	free(grand.astatrr);
     free_env(grand.env.envp);

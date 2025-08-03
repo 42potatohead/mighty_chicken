@@ -184,19 +184,21 @@ int    quotes(char **input, int *space, t_grand *grand)
 void verify_token(t_grand *grand, t_Token *tokens, char *start, char *input)
 {
     char *temp;
+    int flag;
     char *temp2;
-    int flag = 0;
 
-    temp2 = ft_substr(start, 0, input - start);
-    if (temp2[0] == '$')
+    flag = 0;
+    temp = ft_substr(start, 0, input - start);
+    if(temp[0] == '$')
         flag = 1;
+    free(temp);
+    temp2 = ft_substr(start, 0 , input - start);
     temp = expand_variables(temp2, grand);
-    free(temp2);
-    if (temp && ((ft_strlen(temp) == 0 && flag != 1) || ft_strlen(temp) > 0))
+    if(temp && (ft_strlen(temp) == 0 && flag != 1) || ft_strlen(temp) > 0)
         tokens[grand->chicken.token_count++] = create_token(TK_CMD, start, input - start, grand);
     free(temp);
+    free(temp2);
 }
-
 /*
     lexer, it converts text into meaningful lexical tokens, defined by the token enum struct
 */
