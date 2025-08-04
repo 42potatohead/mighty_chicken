@@ -6,7 +6,7 @@
 /*   By: zabu-bak <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 17:22:12 by ataan             #+#    #+#             */
-/*   Updated: 2025/08/02 18:14:20 by zabu-bak         ###   ########.fr       */
+/*   Updated: 2025/08/04 18:05:17 by zabu-bak         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,18 +91,19 @@ int	is_valid_long_long(const char *s)
 	return (1);
 }
 
-void print_error(char *str)
+void	print_error(char *str, t_grand *grand)
 {
 	ft_putstr_fd("exit\n", STDERR_FILENO);
 	ft_putstr_fd("chicken: exit: ", STDERR_FILENO);
 	ft_putstr_fd(str, STDERR_FILENO);
 	ft_putstr_fd(" numeric argument required\n", STDERR_FILENO);
+	clean_exit(grand, grand->original_tokens, grand->original_ast);
 }
 
 // exit needs to clean up
 int	chkn_exit(char **argv, t_grand *grand)
 {
-	int status;
+	int	status;
 
 	status = ft_atoi(argv[1]);
 	if (argv == NULL)
@@ -115,8 +116,7 @@ int	chkn_exit(char **argv, t_grand *grand)
 	}
 	else if (!is_valid_long_long(argv[1]))
 	{
-		print_error(argv[1]);
-		clean_exit(grand, grand->original_tokens, grand->original_ast);
+		print_error(argv[1], grand);
 		exit(2);
 	}
 	else if (argv[2])
