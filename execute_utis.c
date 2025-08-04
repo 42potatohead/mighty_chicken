@@ -53,5 +53,7 @@ void	wait_child(t_grand *grand)
 void	bath_time(t_grand *grand)
 {
 	free(grand->env.full_path);
+	free_tokens(grand->original_tokens, grand->chicken.token_count);
+	free_ast(grand->original_ast);
 	close_redirection_fds();
 }

@@ -91,22 +91,32 @@ int	is_valid_long_long(const char *s)
 	return (1);
 }
 
-// exit needs to clean up
-int	chkn_exit(char **argv)
+void print_error(char *str)
 {
+	ft_putstr_fd("exit\n", STDERR_FILENO);
+	ft_putstr_fd("chicken: exit: ", STDERR_FILENO);
+	ft_putstr_fd(str, STDERR_FILENO);
+	ft_putstr_fd(" numeric argument required\n", STDERR_FILENO);
+}
+
+// exit needs to clean up
+int	chkn_exit(char **argv, t_grand *grand)
+{
+	int status;
+
+	status = ft_atoi(argv[1]);
 	if (argv == NULL)
 		return (EXIT_FAILURE);
 	if (!argv[1])
 	{
 		printf("exit\n");
+		clean_exit(grand, grand->original_tokens, grand->original_ast);
 		exit(0);
 	}
 	else if (!is_valid_long_long(argv[1]))
 	{
-		ft_putstr_fd("exit\n", STDERR_FILENO);
-		ft_putstr_fd("chicken: exit: ", STDERR_FILENO);
-		ft_putstr_fd(argv[1], STDERR_FILENO);
-		ft_putstr_fd(" numeric argument required\n", STDERR_FILENO);
+		print_error(argv[1]);
+		clean_exit(grand, grand->original_tokens, grand->original_ast);
 		exit(2);
 	}
 	else if (argv[2])
@@ -114,7 +124,8 @@ int	chkn_exit(char **argv)
 	else
 	{
 		ft_putstr_fd("exit\n", STDERR_FILENO);
-		exit((unsigned char)ft_atoi(argv[1]));
+		clean_exit(grand, grand->original_tokens, grand->original_ast);
+		exit((unsigned char)status);
 	}
 	return (EXIT_FAILURE);
 }

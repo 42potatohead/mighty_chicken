@@ -115,6 +115,8 @@ typedef struct s_grand
 	int							in_single;
 	int							in_double;
 	int							token_counter;
+	t_Token						*original_tokens;
+	t_ASTNode					*original_ast;
 	int							pflag;
 }								t_grand;
 
@@ -137,7 +139,7 @@ int								set_env_var(char ***envp, const char *key,
 									const char *value);
 int								chkn_unset(char ***envp, char **argv);
 int								chkn_export(char ***envp, char **argv);
-int								chkn_exit(char **argv);
+int								chkn_exit(char **argv, t_grand *grand);
 int								chkn_pwd(char **argv, char **envp);
 int								chkn_echo(char **argv);
 int								chkn_prnt_envp(char **argv, char **envp);
@@ -173,5 +175,7 @@ void							close_wait(int fd[2], t_grand *grand,
 									pid_t last_pid);
 void							wait_child(t_grand *grand);
 void							bath_time(t_grand *grand);
+void							free_tokens(t_Token *tokens, int count);
+void							free_ast(t_ASTNode *ast);
 
 #endif

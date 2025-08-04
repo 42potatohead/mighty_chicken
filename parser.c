@@ -86,7 +86,6 @@ void	fill_pipe(t_Token **tokens, t_ASTNode *right, t_grand *grand)
 t_ASTNode	*parse_expression(t_Token **tokens, t_grand *grand)
 {
 	t_ASTNode	*left;
-	t_NodeType	type;
 	t_ASTNode	*right;
 
 	if (!tokens || !(*tokens))
@@ -100,7 +99,7 @@ t_ASTNode	*parse_expression(t_Token **tokens, t_grand *grand)
 	while ((*tokens)->type == TK_PIPE)
 	{
 		if ((*tokens)->type == TK_PIPE)
-			type = NODE_PIPE;
+			grand->astatrr->type = NODE_PIPE;
 		(*tokens)++;
 		right = parse_command(tokens, grand);
 		fill_pipe(tokens, right, grand);

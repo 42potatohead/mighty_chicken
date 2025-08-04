@@ -25,7 +25,7 @@ void	call_builtin(t_ASTNode *node, t_grand *grand)
 	else if (!ft_strncmp(node->args[0], "env", 3))
 		status = chkn_prnt_envp(node->args, grand->env.envp);
 	else if (!ft_strncmp(node->args[0], "exit", 4))
-		status = chkn_exit(node->args);
+		status = chkn_exit(node->args, grand);
 	else if (!ft_strncmp(node->args[0], "export", 6))
 		status = chkn_export(&grand->env.envp, node->args);
 	else if (!ft_strncmp(node->args[0], "pwd", 3))
@@ -102,6 +102,7 @@ void	execute(t_ASTNode *node, t_grand *grand)
 
 	if (!node)
 		return ;
+	grand->original_ast = node;
 	execute_command(node, grand);
 	if (node->type == NODE_PIPE)
 	{

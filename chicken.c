@@ -71,7 +71,6 @@ int	main(int argc, char **argv, char **envp)
 	t_grand		grand;
 	t_Token		*tokens;
 	t_ASTNode	*ast;
-	t_Token		*original_tokens;
 
 	cracking_the_egg(argc, argv, envp, &grand);
 	while (QUACKING)
@@ -80,16 +79,16 @@ int	main(int argc, char **argv, char **envp)
 		if (!grand.chicken.input)
 			break ;
 		interpret(&grand);
-		run_lexer(&grand, &tokens, &original_tokens);
+		run_lexer(&grand, &tokens, &grand.original_tokens);
 		ast = parse_expression(&tokens, &grand);
 		if (ast && (ast->args[0] != NULL))
 			execute(ast, &grand);
 		if (*grand.chicken.input)
 			add_history(grand.chicken.input);
-		clean_exit(&grand, original_tokens, ast);
+		clean_exit(&grand, grand.original_tokens, ast);
 	}
 	if (grand.chicken.input)
-		clean_exit(&grand, original_tokens, ast);
+		clean_exit(&grand, grand.original_tokens, ast);
 	free(grand.astatrr);
 	free_env(grand.env.envp);
 	return (0);
